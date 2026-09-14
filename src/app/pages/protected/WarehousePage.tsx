@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { FiEdit2, FiEye } from 'react-icons/fi'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { FiEdit2, FiEye, FiTrash2 } from 'react-icons/fi'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../../auth'
 import {
@@ -13,12 +13,12 @@ import {
 import AppIcon from '../../../components/shared/icons/AppIcon'
 import {
 	EmptyState,
-	LoadingState,
 	PageCard,
 	PageHeader,
 	PageLayout,
 	PageSection,
 } from '../../../components/shared/page'
+import WarehouseDeleteDialog from '../../../features/warehouse/components/WarehouseDeleteDialog'
 import WarehouseItemFormPanel from '../../../features/warehouse/components/WarehouseItemFormPanel'
 import WarehouseSaleFormPanel from '../../../features/warehouse/components/WarehouseSaleFormPanel'
 import WarehouseStatsGrid from '../../../features/warehouse/components/WarehouseStatsGrid'
@@ -28,11 +28,13 @@ import {
 	formatQuantity,
 	toNumber,
 } from '../../../features/warehouse/utils/warehouse-format'
+import { parseApiError } from '../../../features/subsidy/utils/subsidy-errors'
 import { formatLocalizedDate } from '../../../i18n/date-format'
 import { usePersistentState } from '../../../lib/persistent-state'
 import { services } from '../../../services'
 import type {
 	WarehouseItem,
+	WarehouseListParams,
 	WarehouseListResult,
 	WarehouseSale,
 	WarehouseStats,
@@ -45,6 +47,13 @@ type OpenPanel =
 	| { kind: 'item'; id: string | null }
 	| { kind: 'stock-entry'; id: string | null }
 	| { kind: 'sale'; id: string | null }
+
+interface DeleteTarget {
+	kind: 'stock-entry' | 'sale'
+	id: string
+	/** Shown in the confirmation, e.g. `Panel 620W · 10`. */
+	label: string
+}
 
 const PAGE_SIZE = 10
 const ITEM_OPTIONS_FETCH_SIZE = 500
@@ -85,6 +94,88 @@ function toPage<T>(result: WarehouseListResult<T>, page: number): WarehouseListR
 	}
 }
 
+interface ListState<T> {
+	rows: T[]
+	totalItems: number
+	isLoading: boolean
+	hasLoaded: boolean
+	/** Short technical reason (status, endpoint, detail) so a broken backend link is visible. */
+	error: string | null
+}
+
+type TabPages = Record<WarehouseTab, number>
+
+const FIRST_PAGES: TabPages = { items: 1, 'stock-entries': 1, sales: 1 }
+
+function describeLoadError(error: unknown): string {
+	const axiosError = error as {
+		message?: string
+		config?: { url?: string }
+		response?: { status?: number; data?: unknown }
+	}
+	const data = axiosError.response?.data as { detail?: unknown } | undefined
+	const detail = typeof data?.detail === 'string' ? data.detail : axiosError.message
+
+	return [axiosError.response?.status, axiosError.config?.url, detail]
+		.filter(Boolean)
+		.join(' · ')
+}
+
+function useWarehouseList<T>(
+	fetchPage: (params: WarehouseListParams) => Promise<WarehouseListResult<T>>,
+	page: number,
+	search: string,
+	reloadCursor: number,
+): ListState<T> {
+	const [state, setState] = useState<ListState<T>>({
+		rows: [],
+		totalItems: 0,
+		isLoading: true,
+		hasLoaded: false,
+		error: null,
+	})
+
+	useEffect(() => {
+		let isActive = true
+		setState(current => ({ ...current, isLoading: true, error: null }))
+
+		fetchPage({ page, pageSize: PAGE_SIZE, search: search || undefined })
+			.then(result => {
+				if (!isActive) {
+					return
+				}
+
+				const pageResult = toPage(result, page)
+				setState({
+					rows: pageResult.items,
+					totalItems: pageResult.totalItems,
+					isLoading: false,
+					hasLoaded: true,
+					error: null,
+				})
+			})
+			.catch((error: unknown) => {
+				if (!isActive) {
+					return
+				}
+
+				setState({
+					rows: [],
+					totalItems: 0,
+					isLoading: false,
+					hasLoaded: true,
+					error: describeLoadError(error),
+				})
+			})
+
+		return () => {
+			isActive = false
+		}
+	}, [fetchPage, page, search, reloadCursor])
+
+	return state
+}
+
 function WarehousePage() {
 	const { t, i18n } = useTranslation()
 	const locale = i18n.language === 'ru' ? 'ru-RU' : 'uz-UZ'
@@ -103,16 +194,35 @@ function WarehousePage() {
 	)
 	const [search, setSearch] = useState('')
 	const [debouncedSearch, setDebouncedSearch] = useState('')
-	const [currentPage, setCurrentPage] = useState(1)
+	const debouncedSearchRef = useRef('')
+	const [pages, setPages] = useState<TabPages>(FIRST_PAGES)
 	const [reloadCursor, setReloadCursor] = useState(0)
 
-	const [items, setItems] = useState<WarehouseItem[]>([])
-	const [stockEntries, setStockEntries] = useState<WarehouseStockEntry[]>([])
-	const [sales, setSales] = useState<WarehouseSale[]>([])
-	const [totalItems, setTotalItems] = useState(0)
-	const [isLoading, setIsLoading] = useState(true)
-	const [hasError, setHasError] = useState(false)
-	const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
+	// All three lists stay connected: loaded on open, on search and after every save.
+	const itemsList = useWarehouseList(
+		services.warehouse.listItems,
+		pages.items,
+		debouncedSearch,
+		reloadCursor,
+	)
+	const stockEntriesList = useWarehouseList(
+		services.warehouse.listStockEntries,
+		pages['stock-entries'],
+		debouncedSearch,
+		reloadCursor,
+	)
+	const salesList = useWarehouseList(
+		services.warehouse.listSales,
+		pages.sales,
+		debouncedSearch,
+		reloadCursor,
+	)
+	const activeList =
+		activeTab === 'items'
+			? itemsList
+			: activeTab === 'stock-entries'
+				? stockEntriesList
+				: salesList
 
 	const [itemOptions, setItemOptions] = useState<WarehouseItem[]>([])
 	const [stats, setStats] = useState<WarehouseStats | null>(null)
@@ -121,18 +231,22 @@ function WarehousePage() {
 
 	const [openPanel, setOpenPanel] = useState<OpenPanel | null>(null)
 	const [successMessage, setSuccessMessage] = useState<string | null>(null)
+	const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null)
+	const [isDeleting, setIsDeleting] = useState(false)
+	const [deleteError, setDeleteError] = useState<string | null>(null)
 
 	useEffect(() => {
 		const timeoutId = window.setTimeout(() => {
-			setDebouncedSearch(search.trim())
+			const nextSearch = search.trim()
+			if (nextSearch !== debouncedSearchRef.current) {
+				debouncedSearchRef.current = nextSearch
+				setDebouncedSearch(nextSearch)
+				setPages(FIRST_PAGES)
+			}
 		}, SEARCH_DEBOUNCE_MS)
 
 		return () => window.clearTimeout(timeoutId)
 	}, [search])
-
-	useEffect(() => {
-		setCurrentPage(1)
-	}, [activeTab, debouncedSearch])
 
 	useEffect(() => {
 		if (!successMessage) {
@@ -142,65 +256,6 @@ function WarehousePage() {
 		const timeoutId = window.setTimeout(() => setSuccessMessage(null), SUCCESS_MESSAGE_MS)
 		return () => window.clearTimeout(timeoutId)
 	}, [successMessage])
-
-	useEffect(() => {
-		let isActive = true
-
-		async function loadList() {
-			setIsLoading(true)
-			setHasError(false)
-
-			const params = {
-				page: currentPage,
-				pageSize: PAGE_SIZE,
-				search: debouncedSearch || undefined,
-			}
-
-			try {
-				if (activeTab === 'items') {
-					const result = toPage(await services.warehouse.listItems(params), currentPage)
-					if (!isActive) {
-						return
-					}
-					setItems(result.items)
-					setTotalItems(result.totalItems)
-				} else if (activeTab === 'stock-entries') {
-					const result = toPage(
-						await services.warehouse.listStockEntries(params),
-						currentPage,
-					)
-					if (!isActive) {
-						return
-					}
-					setStockEntries(result.items)
-					setTotalItems(result.totalItems)
-				} else {
-					const result = toPage(await services.warehouse.listSales(params), currentPage)
-					if (!isActive) {
-						return
-					}
-					setSales(result.items)
-					setTotalItems(result.totalItems)
-				}
-			} catch {
-				if (isActive) {
-					setHasError(true)
-					setTotalItems(0)
-				}
-			} finally {
-				if (isActive) {
-					setIsLoading(false)
-					setHasLoadedOnce(true)
-				}
-			}
-		}
-
-		void loadList()
-
-		return () => {
-			isActive = false
-		}
-	}, [activeTab, currentPage, debouncedSearch, reloadCursor])
 
 	useEffect(() => {
 		let isActive = true
@@ -265,7 +320,7 @@ function WarehousePage() {
 	const handleSaved = useCallback(() => {
 		setOpenPanel(null)
 		setSuccessMessage(t('warehouse.form.saved'))
-		// Edits change stock and totals everywhere: items, entries, sales and stats.
+		// Doc: after a successful save refetch items, stock-entries, sales and stats.
 		setReloadCursor(current => current + 1)
 	}, [t])
 
@@ -281,8 +336,42 @@ function WarehousePage() {
 		[locale],
 	)
 
+	const openDeleteDialog = useCallback((target: DeleteTarget) => {
+		setDeleteError(null)
+		setDeleteTarget(target)
+	}, [])
+
+	async function handleConfirmDelete() {
+		if (!deleteTarget) {
+			return
+		}
+
+		setIsDeleting(true)
+		setDeleteError(null)
+
+		try {
+			if (deleteTarget.kind === 'stock-entry') {
+				await services.warehouse.deleteStockEntry(deleteTarget.id)
+			} else {
+				await services.warehouse.deleteSale(deleteTarget.id)
+			}
+
+			setDeleteTarget(null)
+			setSuccessMessage(t('warehouse.deleteDialog.deleted'))
+			// Deleting an entry or a sale changes stock too: refetch items, lists and stats.
+			setReloadCursor(current => current + 1)
+		} catch (error) {
+			const parsed = parseApiError(error, t('warehouse.deleteDialog.error'))
+			setDeleteError(
+				parsed.message ?? Object.values(parsed.fieldErrors)[0] ?? t('warehouse.deleteDialog.error'),
+			)
+		} finally {
+			setIsDeleting(false)
+		}
+	}
+
 	const renderRowAction = useCallback(
-		(onOpen: () => void) => (
+		(onOpen: () => void, onDelete?: () => void) => (
 			<div className='flex justify-end gap-2'>
 				<button
 					type='button'
@@ -295,6 +384,19 @@ function WarehousePage() {
 				>
 					{canManage ? <FiEdit2 className='h-4 w-4' /> : <FiEye className='h-4 w-4' />}
 				</button>
+				{canManage && onDelete ? (
+					<button
+						type='button'
+						className={`${actionButtonClassName} hover:text-danger`}
+						onClick={event => {
+							event.stopPropagation()
+							onDelete()
+						}}
+						aria-label={t('warehouse.actions.delete')}
+					>
+						<FiTrash2 className='h-4 w-4' />
+					</button>
+				) : null}
 			</div>
 		),
 		[canManage, t],
@@ -434,10 +536,18 @@ function WarehousePage() {
 				label: t('warehouse.columns.actions'),
 				align: 'right',
 				render: entry =>
-					renderRowAction(() => setOpenPanel({ kind: 'stock-entry', id: entry.id })),
+					renderRowAction(
+						() => setOpenPanel({ kind: 'stock-entry', id: entry.id }),
+						() =>
+							openDeleteDialog({
+								kind: 'stock-entry',
+								id: entry.id,
+								label: `${entry.item_name || itemNameById.get(entry.item) || '-'} · ${formatQuantity(entry.quantity, locale)}`,
+							}),
+					),
 			},
 		],
-		[formatDate, itemNameById, locale, renderRowAction, t],
+		[formatDate, itemNameById, locale, openDeleteDialog, renderRowAction, t],
 	)
 
 	const saleColumns = useMemo<DataTableColumn<WarehouseSale>[]>(
@@ -505,10 +615,19 @@ function WarehousePage() {
 				key: 'actions',
 				label: t('warehouse.columns.actions'),
 				align: 'right',
-				render: sale => renderRowAction(() => setOpenPanel({ kind: 'sale', id: sale.id })),
+				render: sale =>
+					renderRowAction(
+						() => setOpenPanel({ kind: 'sale', id: sale.id }),
+						() =>
+							openDeleteDialog({
+								kind: 'sale',
+								id: sale.id,
+								label: `${sale.item_name || itemNameById.get(sale.item) || '-'} · ${formatQuantity(sale.quantity, locale)}`,
+							}),
+					),
 			},
 		],
-		[formatDate, itemNameById, locale, renderRowAction, t],
+		[formatDate, itemNameById, locale, openDeleteDialog, renderRowAction, t],
 	)
 
 	function openCreatePanel() {
@@ -521,7 +640,14 @@ function WarehousePage() {
 		}
 	}
 
-	const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE))
+	const totalPages = Math.max(1, Math.ceil(activeList.totalItems / PAGE_SIZE))
+	const currentPage = Math.min(pages[activeTab], totalPages)
+
+	const tabLists: Record<WarehouseTab, ListState<unknown>> = {
+		items: itemsList,
+		'stock-entries': stockEntriesList,
+		sales: salesList,
+	}
 
 	const tabLabels: Record<WarehouseTab, string> = {
 		items: t('warehouse.tabs.items'),
@@ -554,27 +680,12 @@ function WarehousePage() {
 					) : null}
 					<span className='inline-flex min-h-8 items-center gap-2 rounded-pill bg-primary/12 px-3 text-[12px] font-semibold text-text-accent'>
 						<AppIcon name='warehouse' className='h-3.5 w-3.5' aria-hidden='true' />
-						{totalItems} {t('warehouse.records')}
+						{activeList.totalItems} {t('warehouse.records')}
 					</span>
 				</div>
 			}
 		/>
 	)
-
-	if (!hasLoadedOnce && isLoading) {
-		return (
-			<PageLayout header={header}>
-				<PageSection>
-					<PageCard>
-						<LoadingState
-							title={t('warehouse.loadingTitle')}
-							description={t('warehouse.loadingDescription')}
-						/>
-					</PageCard>
-				</PageSection>
-			</PageLayout>
-		)
-	}
 
 	return (
 		<PageLayout header={header}>
@@ -623,22 +734,27 @@ function WarehousePage() {
 									].join(' ')}
 								>
 									{tabLabels[tab]}
+									{tabLists[tab].hasLoaded && !tabLists[tab].error ? (
+										<span className='ml-1.5 text-[12px] font-semibold text-text-muted'>
+											{tabLists[tab].totalItems}
+										</span>
+									) : null}
 								</button>
 							))}
 						</div>
 					</div>
 
-					{hasError ? (
+					{activeList.error ? (
 						<EmptyState
 							title={t('warehouse.errorTitle')}
-							description={t('warehouse.errorDescription')}
+							description={`${t('warehouse.errorDescription')} (${activeList.error})`}
 						/>
 					) : activeTab === 'items' ? (
 						<DataTable
-							data={items}
+							data={itemsList.rows}
 							columns={itemColumns}
 							rowKey='id'
-							loading={isLoading}
+							loading={itemsList.isLoading}
 							getRowClassName={item =>
 								isLowStock(item)
 									? 'bg-danger-bg/55 shadow-[inset_0_0_0_1px_rgb(var(--color-danger)/0.16)] hover:bg-danger-bg/70'
@@ -650,20 +766,20 @@ function WarehousePage() {
 						/>
 					) : activeTab === 'stock-entries' ? (
 						<DataTable
-							data={stockEntries}
+							data={stockEntriesList.rows}
 							columns={stockEntryColumns}
 							rowKey='id'
-							loading={isLoading}
+							loading={stockEntriesList.isLoading}
 							onRowClick={entry => setOpenPanel({ kind: 'stock-entry', id: entry.id })}
 							emptyTitle={t('warehouse.empty.stockEntriesTitle')}
 							emptyDescription={t('warehouse.empty.stockEntriesDescription')}
 						/>
 					) : (
 						<DataTable
-							data={sales}
+							data={salesList.rows}
 							columns={saleColumns}
 							rowKey='id'
-							loading={isLoading}
+							loading={salesList.isLoading}
 							onRowClick={sale => setOpenPanel({ kind: 'sale', id: sale.id })}
 							emptyTitle={t('warehouse.empty.salesTitle')}
 							emptyDescription={t('warehouse.empty.salesDescription')}
@@ -671,12 +787,14 @@ function WarehousePage() {
 					)}
 				</PageCard>
 
-				{!isLoading && !hasError && totalItems > 0 ? (
+				{!activeList.isLoading && !activeList.error && activeList.totalItems > 0 ? (
 					<Pagination
-						currentPage={Math.min(currentPage, totalPages)}
+						currentPage={currentPage}
 						totalPages={totalPages}
-						totalItems={totalItems}
-						onPageChange={setCurrentPage}
+						totalItems={activeList.totalItems}
+						onPageChange={page =>
+							setPages(current => ({ ...current, [activeTab]: page }))
+						}
 					/>
 				) : null}
 			</PageSection>
@@ -700,6 +818,27 @@ function WarehousePage() {
 					items={itemOptions}
 					onClose={() => setOpenPanel(null)}
 					onSaved={handleSaved}
+				/>
+			) : null}
+
+			{deleteTarget ? (
+				<WarehouseDeleteDialog
+					title={
+						deleteTarget.kind === 'stock-entry'
+							? t('warehouse.deleteDialog.stockEntryTitle')
+							: t('warehouse.deleteDialog.saleTitle')
+					}
+					description={t('warehouse.deleteDialog.description', { label: deleteTarget.label })}
+					isDeleting={isDeleting}
+					errorMessage={deleteError}
+					onCancel={() => {
+						if (!isDeleting) {
+							setDeleteTarget(null)
+						}
+					}}
+					onConfirm={() => {
+						void handleConfirmDelete()
+					}}
 				/>
 			) : null}
 

@@ -18,7 +18,7 @@ import {
 	getCurrencyLabel,
 	isDecimalString,
 	normalizeDecimalInput,
-	pickChangedFields,
+	hasChangedFields,
 	toDateTimeInputValue,
 	toNumber,
 } from '../utils/warehouse-format'
@@ -375,11 +375,13 @@ function WarehouseSaleFormPanel({
 		}
 
 		const nextInput = toInput(form)
-		const payload = isEdit
-			? pickChangedFields(toInput(initialForm), nextInput)
-			: { ...nextInput, client: nextInput.client || undefined }
+		// Doc: edit sends the full sale field set. `client: null` only unlinks a previously linked client.
+		const payload: WarehouseSaleInput = {
+			...nextInput,
+			client: nextInput.client || (isEdit && initialForm.client ? null : undefined),
+		}
 
-		if (isEdit && Object.keys(payload).length === 0) {
+		if (isEdit && !hasChangedFields(toInput(initialForm), nextInput)) {
 			onClose()
 			return
 		}

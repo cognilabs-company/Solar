@@ -17,7 +17,7 @@ import {
 	getCurrencyLabel,
 	isDecimalString,
 	normalizeDecimalInput,
-	pickChangedFields,
+	hasChangedFields,
 	toDateTimeInputValue,
 	toNumber,
 } from '../utils/warehouse-format'
@@ -219,11 +219,10 @@ function WarehouseStockEntryFormPanel({
 			return
 		}
 
-		const payload = isEdit
-			? pickChangedFields(toInput(initialForm), toInput(form))
-			: toInput(form)
+		// Doc: edit sends item, quantity, currency, unit_cost, supplier_name, received_at, notes.
+		const payload = toInput(form)
 
-		if (isEdit && Object.keys(payload).length === 0) {
+		if (isEdit && !hasChangedFields(toInput(initialForm), payload)) {
 			onClose()
 			return
 		}

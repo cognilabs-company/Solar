@@ -2243,7 +2243,8 @@
       "latePenaltyHint": "Har bir kechiktirilgan kun uchun foiz, masalan: 1.",
       "penaltyHint": "To'lov 30 kundan ortiq kechiksa shartnomada ko'rsatiladigan jarima.",
       "types": {
-        "retail_sale": "Chakana oldi-sotdi"
+        "retail_sale": "Chakana oldi-sotdi",
+        "guarantee": "Kafolat shartnomasi"
       },
       "sections": {
         "parties": "Tomonlar",
@@ -2610,7 +2611,8 @@
       "newStockEntry": "Yangi kirim",
       "newSale": "Yangi sotuv",
       "edit": "Tahrirlash",
-      "view": "Ko'rish"
+      "view": "Ko'rish",
+      "delete": "O'chirish"
     },
     "columns": {
       "panel": "Panel",
@@ -2729,6 +2731,16 @@
         "total_debt": "Qarzdorlik",
         "debt_amount": "Qarzdorlik"
       }
+    },
+    "deleteDialog": {
+      "eyebrow": "O'chirish",
+      "stockEntryTitle": "Kirimni o'chirish",
+      "saleTitle": "Sotuvni o'chirish",
+      "description": "{{label}} yozuvi o'chiriladi. Sklad qoldig'i backendda qayta hisoblanadi.",
+      "confirm": "Ha, o'chirish",
+      "deleting": "O'chirilmoqda...",
+      "deleted": "O'chirildi. Qoldiq va statistika yangilandi.",
+      "error": "O'chirib bo'lmadi. Qayta urinib ko'ring."
     }
   }
 }

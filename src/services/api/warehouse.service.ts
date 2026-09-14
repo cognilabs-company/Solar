@@ -170,7 +170,8 @@ function mapList<T>(
 	payload: unknown,
 	mapper: (item: unknown) => T,
 ): WarehouseListResult<T> {
-	const data = unwrapData(payload)
+	// `{ data: [...], meta: {...} }` keeps its meta; `{ status, data: { results } }` is unwrapped.
+	const data = Array.isArray(toRecord(payload)?.data) ? payload : unwrapData(payload)
 
 	if (Array.isArray(data)) {
 		return { items: data.map(mapper), totalItems: data.length }
@@ -181,12 +182,17 @@ function mapList<T>(
 		? record.results
 		: Array.isArray(record.items)
 			? record.items
-			: []
+			: Array.isArray(record.data)
+				? record.data
+				: []
+	const meta = toRecord(record.meta) ?? toRecord(record.pagination) ?? {}
+	const total = [record.count, record.total, record.total_count, meta.count, meta.total].find(
+		value => typeof value === 'number',
+	)
 
 	return {
 		items: rawItems.map(mapper),
-		totalItems:
-			typeof record.count === 'number' ? record.count : rawItems.length,
+		totalItems: typeof total === 'number' ? total : rawItems.length,
 	}
 }
 
@@ -200,8 +206,9 @@ function toListQuery(params?: WarehouseListParams) {
 }
 
 /**
- * Only keys that are present in the input are sent, so a PATCH carries just
- * the fields the user changed. Read-only totals are never part of the input.
+ * Undefined keys are dropped. Edits send the full documented field set so the
+ * backend can recalculate stock from `item` and `quantity`; read-only totals
+ * are never part of the input.
  */
 function toPayload(input: object): Record<string, unknown> {
 	const payload: Record<string, unknown> = {}
@@ -286,6 +293,10 @@ export async function patchWarehouseStockEntry(
 	return mapStockEntry(data)
 }
 
+export async function deleteWarehouseStockEntry(id: string): Promise<void> {
+	await apiClient.delete(`${STOCK_ENTRIES_ENDPOINT}${id}/`)
+}
+
 export async function listWarehouseSales(
 	params?: WarehouseListParams,
 ): Promise<WarehouseListResult<WarehouseSale>> {
@@ -318,6 +329,10 @@ export async function patchWarehouseSale(
 	return mapSale(data)
 }
 
+export async function deleteWarehouseSale(id: string): Promise<void> {
+	await apiClient.delete(`${SALES_ENDPOINT}${id}/`)
+}
+
 export async function getWarehouseStats(): Promise<WarehouseStats> {
 	const { data } = await apiClient.get<unknown>(STATS_ENDPOINT)
 	return toRecord(unwrapData(data)) ?? {}
@@ -332,9 +347,11 @@ export const apiWarehouseService = {
 	getStockEntry: getWarehouseStockEntry,
 	createStockEntry: createWarehouseStockEntry,
 	patchStockEntry: patchWarehouseStockEntry,
+	deleteStockEntry: deleteWarehouseStockEntry,
 	listSales: listWarehouseSales,
 	getSale: getWarehouseSale,
 	createSale: createWarehouseSale,
 	patchSale: patchWarehouseSale,
+	deleteSale: deleteWarehouseSale,
 	getStats: getWarehouseStats,
 }

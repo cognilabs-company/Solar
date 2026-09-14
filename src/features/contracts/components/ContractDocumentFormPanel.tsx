@@ -66,7 +66,7 @@ const labelClassName =
 const sectionClassName =
 	'grid gap-3 rounded-xl bg-surface-card p-4 shadow-sm ring-1 ring-border-soft/40'
 
-const CONTRACT_TYPES: ContractDocumentType[] = ['retail_sale']
+const CONTRACT_TYPES: ContractDocumentType[] = ['retail_sale', 'guarantee']
 
 const PAYMENT_METHOD_SUGGESTIONS = ['Naqd', 'Plastik karta', "Bank o'tkazmasi"]
 

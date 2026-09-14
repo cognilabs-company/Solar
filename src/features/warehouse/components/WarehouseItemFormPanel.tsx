@@ -13,7 +13,7 @@ import {
 	getCurrencyLabel,
 	isDecimalString,
 	normalizeDecimalInput,
-	pickChangedFields,
+	hasChangedFields,
 	toNumber,
 } from '../utils/warehouse-format'
 import WarehouseFormPanel, {
@@ -232,11 +232,9 @@ function WarehouseItemFormPanel({
 			return
 		}
 
-		const payload = isEdit
-			? pickChangedFields(toInput(initialForm), toInput(form))
-			: toInput(form)
+		const payload = toInput(form)
 
-		if (isEdit && Object.keys(payload).length === 0) {
+		if (isEdit && !hasChangedFields(toInput(initialForm), payload)) {
 			onClose()
 			return
 		}

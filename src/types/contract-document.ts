@@ -5,7 +5,7 @@
  * DOCX template prints as-is.
  */
 
-export type ContractDocumentType = 'retail_sale'
+export type ContractDocumentType = 'retail_sale' | 'guarantee'
 
 export interface ContractDocumentProduct {
 	name: string

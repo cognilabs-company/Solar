@@ -114,17 +114,9 @@ export function fromDateTimeInputValue(value: string): string | undefined {
 }
 
 /**
- * Keeps only the keys whose value differs from the initial snapshot, so edit
- * PATCH requests (and the backend audit log) contain just the changed fields.
+ * True when any field differs from the snapshot loaded for editing; an edit
+ * with no changes closes without a request.
  */
-export function pickChangedFields<T extends object>(initial: T, next: T): Partial<T> {
-	const changed: Partial<T> = {}
-
-	;(Object.keys(next) as (keyof T)[]).forEach(key => {
-		if (next[key] !== initial[key]) {
-			changed[key] = next[key]
-		}
-	})
-
-	return changed
+export function hasChangedFields<T extends object>(initial: T, next: T): boolean {
+	return (Object.keys(next) as (keyof T)[]).some(key => next[key] !== initial[key])
 }
