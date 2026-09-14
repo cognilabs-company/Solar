@@ -11,6 +11,7 @@ import { apiIntegrationsService } from './api/integrations.service'
 import { apiAISettingsService } from './api/ai-settings.service'
 import { apiLogsService } from './api/common.service'
 import { apiSubsidyService } from './api/subsidy.service'
+import { apiWarehouseService } from './api/warehouse.service'
 import { apiLeadService } from './api/lead-service'
 import { apiClientService } from './api/client-service'
 import { apiNotificationService } from './api/notification-service'
@@ -93,6 +94,7 @@ export const services = {
 		patchSettings: apiSubsidyService.patchSettings,
 		calculate: apiSubsidyService.calculate,
 	},
+	warehouse: apiWarehouseService,
 	leads: {
 		listLeads: leadApi.listLeads.bind(leadApi),
 		getLead: leadApi.getLeadById.bind(leadApi),

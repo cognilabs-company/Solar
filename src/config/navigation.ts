@@ -8,6 +8,7 @@ export type NavigationIconKey =
   | 'clients'
   | 'orders'
   | 'products'
+  | 'warehouse'
   | 'chats'
   | 'contracts'
   | 'notifications'
@@ -93,6 +94,16 @@ export const navigationConfig: NavigationGroupConfig[] = [
         iconKey: 'products',
         group: 'operations',
         sortOrder: 1,
+        allowedRoles: ['developer', 'admin', 'operator'],
+      },
+      {
+        id: 'warehouse',
+        label: 'Warehouse',
+        path: '/warehouse',
+        moduleId: 'warehouse',
+        iconKey: 'warehouse',
+        group: 'operations',
+        sortOrder: 1.5,
         allowedRoles: ['developer', 'admin', 'operator'],
       },
       {

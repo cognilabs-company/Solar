@@ -33,6 +33,7 @@ import ProductsPage from '../pages/protected/ProductsPage'
 import SubsidySettingsPage from '../pages/protected/SubsidySettingsPage'
 import OperatorKpiPage from '../pages/protected/OperatorKpiPage'
 import UsersPage from '../pages/protected/UsersPage'
+import WarehousePage from '../pages/protected/WarehousePage'
 
 type RoutedPageId = Exclude<AppRouteId, 'home'>
 
@@ -53,6 +54,7 @@ const pageRegistry: Record<RoutedPageId, ComponentType> = {
 	'subsidy-settings': SubsidySettingsPage,
 	'operator-kpi': OperatorKpiPage,
 	users: UsersPage,
+	warehouse: WarehousePage,
 }
 
 function renderRouteElement(route: AppRouteConfig): JSX.Element {

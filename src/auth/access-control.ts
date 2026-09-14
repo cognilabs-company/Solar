@@ -10,6 +10,7 @@ const ROUTE_REQUIRED_PERMISSIONS: Partial<Record<AppRouteId, PermissionCode>> =
 		clients: 'can_view_clients',
 		'webapp-clients': 'can_view_clients',
 		products: 'can_view_products',
+		warehouse: 'can_view_warehouse',
 		contracts: 'can_view_contracts',
 		chats: 'can_access_chats',
 		notifications: 'can_view_notifications',
@@ -24,6 +25,7 @@ const IMPLIED_PERMISSIONS: Partial<Record<PermissionCode, PermissionCode[]>> = {
 	can_view_clients: ['can_manage_clients'],
 	can_view_products: ['can_manage_products'],
 	can_view_contracts: ['can_manage_contracts'],
+	can_view_warehouse: ['can_manage_warehouse'],
 }
 
 const PUBLIC_ROUTE_IDS = new Set<AppRouteId>([
@@ -38,6 +40,7 @@ const MODULE_PATH_BY_ROUTE_ID: Record<string, string> = {
 	clients: routePaths.clients,
 	'webapp-clients': routePaths['webapp-clients'],
 	products: routePaths.products,
+	warehouse: routePaths.warehouse,
 	contracts: routePaths.contracts,
 	chats: routePaths.chats,
 	notifications: routePaths.notifications,
