@@ -2219,6 +2219,59 @@
       "newClientPhonePlaceholder": "Например: +998901234567",
       "newClientRequiredError": "Для нового клиента заполните имя и название договора.",
       "subsidyRequiredError": "Заполните поле «Субсидия (%)»."
+    },
+    "document": {
+      "button": "Сформировать договор",
+      "eyebrow": "Договор DOCX",
+      "title": "Формирование договора",
+      "subtitle": "Заполните данные — backend подготовит файл договора DOCX.",
+      "close": "Закрыть",
+      "generate": "Сформировать",
+      "generating": "Формируется...",
+      "downloaded": "Договор готов, файл скачан.",
+      "generated": "Договор сформирован.",
+      "openFile": "Открыть файл",
+      "generateError": "Не удалось сформировать договор. Проверьте поля и попробуйте снова.",
+      "requiredError": "Это поле обязательно.",
+      "numberError": "Введите число больше 0.",
+      "productsRequired": "Добавьте хотя бы один товар.",
+      "currency": "so'm",
+      "addProduct": "Добавить товар",
+      "removeProduct": "Удалить товар",
+      "productNumber": "Товар {{number}}",
+      "fillTotal": "Посчитать по товарам: {{amount}} so'm",
+      "latePenaltyHint": "Процент за каждый день просрочки, например: 1.",
+      "penaltyHint": "Штраф, указываемый в договоре при просрочке оплаты более 30 дней.",
+      "types": {
+        "retail_sale": "Розничная купля-продажа"
+      },
+      "sections": {
+        "parties": "Стороны",
+        "products": "Товары",
+        "payment": "Условия оплаты"
+      },
+      "fields": {
+        "contract_type": "Тип договора",
+        "contract_number": "Номер договора",
+        "contract_date": "Дата договора",
+        "contract_place": "Место заключения",
+        "seller_organization_name": "Организация продавца",
+        "seller_director_full_name": "Ф.И.О. директора продавца",
+        "buyer_full_name": "Ф.И.О. покупателя",
+        "buyer_address": "Адрес покупателя",
+        "total_amount": "Общая сумма",
+        "payment_method": "Способ оплаты",
+        "contract_end_date": "Дата окончания договора",
+        "late_payment_daily_penalty_text": "Пеня за день просрочки (процент)",
+        "penalty_amount": "Сумма штрафа"
+      },
+      "productFields": {
+        "name": "Название",
+        "model": "Модель",
+        "unit": "Единица",
+        "quantity": "Кол-во",
+        "price": "Цена"
+      }
     }
   },
   "operatorKpi": {

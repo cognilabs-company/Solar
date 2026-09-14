@@ -2219,6 +2219,59 @@
       "newClientPhonePlaceholder": "Masalan: +998901234567",
       "newClientRequiredError": "Yangi mijoz uchun ism va shartnoma nomini to'ldiring.",
       "subsidyRequiredError": "Subsidiya (%) maydonini to'ldiring."
+    },
+    "document": {
+      "button": "Shartnoma generatsiya",
+      "eyebrow": "DOCX shartnoma",
+      "title": "Shartnoma generatsiya qilish",
+      "subtitle": "Ma'lumotlarni to'ldiring - backend DOCX shartnoma faylini tayyorlaydi.",
+      "close": "Yopish",
+      "generate": "Generatsiya qilish",
+      "generating": "Tayyorlanmoqda...",
+      "downloaded": "Shartnoma tayyor, fayl yuklab olindi.",
+      "generated": "Shartnoma tayyorlandi.",
+      "openFile": "Faylni ochish",
+      "generateError": "Shartnomani generatsiya qilib bo'lmadi. Maydonlarni tekshirib qayta urinib ko'ring.",
+      "requiredError": "Bu maydon to'ldirilishi shart.",
+      "numberError": "0 dan katta raqam kiriting.",
+      "productsRequired": "Kamida bitta mahsulot qo'shing.",
+      "currency": "so'm",
+      "addProduct": "Mahsulot qo'shish",
+      "removeProduct": "Mahsulotni o'chirish",
+      "productNumber": "Mahsulot {{number}}",
+      "fillTotal": "Mahsulotlardan hisoblash: {{amount}} so'm",
+      "latePenaltyHint": "Har bir kechiktirilgan kun uchun foiz, masalan: 1.",
+      "penaltyHint": "To'lov 30 kundan ortiq kechiksa shartnomada ko'rsatiladigan jarima.",
+      "types": {
+        "retail_sale": "Chakana oldi-sotdi"
+      },
+      "sections": {
+        "parties": "Tomonlar",
+        "products": "Mahsulotlar",
+        "payment": "To'lov shartlari"
+      },
+      "fields": {
+        "contract_type": "Shartnoma turi",
+        "contract_number": "Shartnoma raqami",
+        "contract_date": "Shartnoma sanasi",
+        "contract_place": "Tuzilgan joy",
+        "seller_organization_name": "Sotuvchi tashkilot",
+        "seller_director_full_name": "Sotuvchi direktori F.I.Sh.",
+        "buyer_full_name": "Xaridor F.I.Sh.",
+        "buyer_address": "Xaridor manzili",
+        "total_amount": "Umumiy summa",
+        "payment_method": "To'lov usuli",
+        "contract_end_date": "Shartnoma tugash sanasi",
+        "late_payment_daily_penalty_text": "Kechikish uchun kunlik penya (foiz)",
+        "penalty_amount": "Jarima summasi"
+      },
+      "productFields": {
+        "name": "Nomi",
+        "model": "Modeli",
+        "unit": "O'lchov birligi",
+        "quantity": "Soni",
+        "price": "Narxi"
+      }
     }
   },
   "operatorKpi": {
