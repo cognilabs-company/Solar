@@ -10,7 +10,6 @@ export const PERMISSION_CODES = [
 	'can_manage_leads',
 	'can_manage_products',
 	'can_manage_users',
-	'can_manage_warehouse',
 	'can_view_clients',
 	'can_view_contracts',
 	'can_view_dashboard',
@@ -18,7 +17,6 @@ export const PERMISSION_CODES = [
 	'can_view_logs',
 	'can_view_notifications',
 	'can_view_products',
-	'can_view_warehouse',
 ] as const
 
 export type PermissionCode = (typeof PERMISSION_CODES)[number]

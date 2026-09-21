@@ -63,10 +63,6 @@
       "title": "Mahsulotlar",
       "description": "Katalog, narx va zaxira boshqaruvi."
     },
-    "warehouse": {
-      "title": "Sklad",
-      "description": "Sklad mahsulotlari, kirimlar va sotuvlar."
-    },
     "contracts": {
       "title": "Shartnomalar",
       "description": "Shartnomalar va hujjatlar holatini boshqarish."
@@ -145,7 +141,6 @@
       "clients": "Mijozlar",
       "webapp-clients": "WebApp buyurtmalari",
       "products": "Katalog",
-      "warehouse": "Kirim va sotuv",
       "contracts": "Shartnomalar",
       "orders": "Buyurtmalar",
       "couriers": "Yetkazib berish",
@@ -1873,8 +1868,6 @@
       "can_manage_customers": "Mijozlarni boshqarish",
       "can_view_products": "Mahsulotlarni ko'rish",
       "can_manage_products": "Mahsulotlarni boshqarish",
-      "can_view_warehouse": "Skladni ko'rish",
-      "can_manage_warehouse": "Skladni boshqarish",
       "can_view_orders": "Buyurtmalarni ko'rish",
       "can_update_orders": "Buyurtmalarni yangilash",
       "can_view_payments": "To'lovlarni ko'rish",
@@ -1899,10 +1892,6 @@
       "products": {
         "view": "Mahsulotlarni ko'rish",
         "manage": "Mahsulotlarni boshqarish"
-      },
-      "warehouse": {
-        "view": "Skladni ko'rish",
-        "manage": "Skladni boshqarish"
       },
       "chats": {
         "view": "Chatlarni ko'rish",
@@ -1944,8 +1933,6 @@
       "can_manage_customers": "Mijozlarni qo'shish, tahrirlash va o'chirishga ruxsat beradi.",
       "can_view_products": "Mahsulot katalogini ko'rishga ruxsat beradi.",
       "can_manage_products": "Mahsulotlarni qo'shish, tahrirlash va o'chirishga ruxsat beradi.",
-      "can_view_warehouse": "Sklad mahsulotlari, kirimlar va sotuvlarni ko'rishga ruxsat beradi.",
-      "can_manage_warehouse": "Sklad mahsulotlari, kirimlar va sotuvlarni qo'shish va tahrirlashga ruxsat beradi.",
       "can_view_orders": "Buyurtmalar ro'yxati va tafsilotlarini ko'rishga ruxsat beradi.",
       "can_update_orders": "Buyurtma holati va tafsilotlarini yangilashga ruxsat beradi.",
       "can_view_payments": "To'lovlar ro'yxati va tafsilotlarini ko'rishga ruxsat beradi.",
@@ -1970,10 +1957,6 @@
       "products": {
         "view": "Mahsulotlar va katalog ma'lumotlarini ko'rish",
         "manage": "Mahsulotlarni yaratish, yangilash va o'chirish"
-      },
-      "warehouse": {
-        "view": "Sklad qoldig'i, kirimlar va sotuvlarni ko'rish",
-        "manage": "Kirim va sotuvlarni yaratish hamda tahrirlash"
       },
       "chats": {
         "view": "Chat seanslari va xabarlarni ko'rish",
@@ -2224,60 +2207,6 @@
       "newClientPhonePlaceholder": "Masalan: +998901234567",
       "newClientRequiredError": "Yangi mijoz uchun ism va shartnoma nomini to'ldiring.",
       "subsidyRequiredError": "Subsidiya (%) maydonini to'ldiring."
-    },
-    "document": {
-      "button": "Shartnoma generatsiya",
-      "eyebrow": "DOCX shartnoma",
-      "title": "Shartnoma generatsiya qilish",
-      "subtitle": "Ma'lumotlarni to'ldiring - backend DOCX shartnoma faylini tayyorlaydi.",
-      "close": "Yopish",
-      "generate": "Generatsiya qilish",
-      "generating": "Tayyorlanmoqda...",
-      "downloaded": "Shartnoma tayyor, fayl yuklab olindi.",
-      "generated": "Shartnoma tayyorlandi.",
-      "openFile": "Faylni ochish",
-      "generateError": "Shartnomani generatsiya qilib bo'lmadi. Maydonlarni tekshirib qayta urinib ko'ring.",
-      "requiredError": "Bu maydon to'ldirilishi shart.",
-      "numberError": "0 dan katta raqam kiriting.",
-      "productsRequired": "Kamida bitta mahsulot qo'shing.",
-      "currency": "so'm",
-      "addProduct": "Mahsulot qo'shish",
-      "removeProduct": "Mahsulotni o'chirish",
-      "productNumber": "Mahsulot {{number}}",
-      "fillTotal": "Mahsulotlardan hisoblash: {{amount}} so'm",
-      "latePenaltyHint": "Har bir kechiktirilgan kun uchun foiz, masalan: 1.",
-      "penaltyHint": "To'lov 30 kundan ortiq kechiksa shartnomada ko'rsatiladigan jarima.",
-      "types": {
-        "retail_sale": "Chakana oldi-sotdi",
-        "guarantee": "Kafolat shartnomasi"
-      },
-      "sections": {
-        "parties": "Tomonlar",
-        "products": "Mahsulotlar",
-        "payment": "To'lov shartlari"
-      },
-      "fields": {
-        "contract_type": "Shartnoma turi",
-        "contract_number": "Shartnoma raqami",
-        "contract_date": "Shartnoma sanasi",
-        "contract_place": "Tuzilgan joy",
-        "seller_organization_name": "Sotuvchi tashkilot",
-        "seller_director_full_name": "Sotuvchi direktori F.I.Sh.",
-        "buyer_full_name": "Xaridor F.I.Sh.",
-        "buyer_address": "Xaridor manzili",
-        "total_amount": "Umumiy summa",
-        "payment_method": "To'lov usuli",
-        "contract_end_date": "Shartnoma tugash sanasi",
-        "late_payment_daily_penalty_text": "Kechikish uchun kunlik penya (foiz)",
-        "penalty_amount": "Jarima summasi"
-      },
-      "productFields": {
-        "name": "Nomi",
-        "model": "Modeli",
-        "unit": "O'lchov birligi",
-        "quantity": "Soni",
-        "price": "Narxi"
-      }
     },
     "deleteError": "Shartnomani o'chirib bo'lmadi."
   },
@@ -2594,162 +2523,6 @@
       "referencePower": "Subsidiya quvvati",
       "percent": "Subsidiya foizi",
       "maxSubsidy": "Maksimal subsidiya"
-    }
-  },
-  "warehouse": {
-    "eyebrow": "Sklad",
-    "title": "Sklad",
-    "subtitle": "Mahsulotlar qoldig'i, kirimlar va sotuvlar. Summalar va qoldiq backendda hisoblanadi.",
-    "records": "ta yozuv",
-    "loadingTitle": "Sklad yuklanmoqda",
-    "loadingDescription": "Sklad ma'lumotlari olinmoqda.",
-    "errorTitle": "Ma'lumotlarni olib bo'lmadi",
-    "errorDescription": "Sklad ro'yxatini yuklashda xatolik. Sahifani yangilab ko'ring.",
-    "readOnlyHint": "Sizda faqat ko'rish huquqi bor. Tahrirlash uchun warehouse.manage ruxsati kerak.",
-    "searchPlaceholder": "Qidirish...",
-    "lowStock": "Kam qoldi",
-    "noCategory": "Kategoriyasiz",
-    "noSupplier": "Yetkazib beruvchi ko'rsatilmagan",
-    "tabs": {
-      "items": "Mahsulotlar",
-      "stockEntries": "Kirimlar",
-      "sales": "Sotuvlar"
-    },
-    "actions": {
-      "newItem": "Yangi mahsulot",
-      "newStockEntry": "Yangi kirim",
-      "newSale": "Yangi sotuv",
-      "edit": "Tahrirlash",
-      "view": "Ko'rish",
-      "delete": "O'chirish"
-    },
-    "columns": {
-      "panel": "Panel",
-      "actions": "Amallar"
-    },
-    "empty": {
-      "itemsTitle": "Mahsulotlar topilmadi",
-      "itemsDescription": "Skladga mahsulot qo'shilganda bu yerda ko'rinadi.",
-      "stockEntriesTitle": "Kirimlar topilmadi",
-      "stockEntriesDescription": "Skladga kirim qilinganda bu yerda ko'rinadi.",
-      "salesTitle": "Sotuvlar topilmadi",
-      "salesDescription": "Skladdan sotuv qilinganda bu yerda ko'rinadi."
-    },
-    "fields": {
-      "name": "Nomi",
-      "category": "Kategoriya",
-      "description": "Izoh",
-      "unit": "O'lchov birligi",
-      "default_price": "Standart narx",
-      "default_currency": "Standart valyuta",
-      "is_panel": "Quyosh paneli",
-      "panel_watt": "Panel quvvati (W)",
-      "panel_count": "Panel soni",
-      "panel_price": "1 W narxi",
-      "low_stock_threshold": "Minimal qoldiq",
-      "current_quantity": "Joriy qoldiq",
-      "panel_total_watt": "Umumiy quvvat",
-      "panel_total_price": "Panellar umumiy narxi",
-      "updated_at": "Yangilangan",
-      "item": "Mahsulot",
-      "quantity": "Miqdor",
-      "currency": "Valyuta",
-      "unit_cost": "Kirim narxi (1 dona)",
-      "total_cost": "Kirim summasi",
-      "supplier_name": "Yetkazib beruvchi",
-      "received_at": "Kirim sanasi",
-      "notes": "Izoh",
-      "client": "CRM mijozi",
-      "client_name": "Mijoz ismi",
-      "client_phone": "Mijoz telefoni",
-      "unit_price": "Sotuv narxi (1 dona)",
-      "total_amount": "Sotuv summasi",
-      "paid_amount": "To'langan summa",
-      "payment_type": "To'lov turi",
-      "sold_at": "Sotuv sanasi"
-    },
-    "paymentTypes": {
-      "cash": "Naqd",
-      "card": "Karta",
-      "transfer": "O'tkazma"
-    },
-    "form": {
-      "loadingTitle": "Ma'lumot yuklanmoqda",
-      "loadingDescription": "Tahrirlash uchun joriy ma'lumotlar olinmoqda.",
-      "loadErrorTitle": "Ma'lumotni olib bo'lmadi",
-      "loadErrorDescription": "Yozuvni yuklashda xatolik. Oynani yopib qayta urinib ko'ring.",
-      "close": "Yopish",
-      "save": "Saqlash",
-      "create": "Qo'shish",
-      "saving": "Saqlanmoqda...",
-      "saved": "Saqlandi. Qoldiq va statistika yangilandi.",
-      "saveError": "Saqlab bo'lmadi. Qayta urinib ko'ring.",
-      "requiredError": "Bu maydon to'ldirilishi shart.",
-      "numberError": "To'g'ri raqam kiriting.",
-      "positiveNumberError": "0 dan katta raqam kiriting.",
-      "selectItem": "Mahsulotni tanlang",
-      "backendValue": "Backend hisoblagan qiymat",
-      "totalAfterSaveHint": "Saqlangandan keyin backend qayta hisoblaydi"
-    },
-    "itemForm": {
-      "eyebrow": "Sklad mahsuloti",
-      "createTitle": "Yangi mahsulot",
-      "editTitle": "Mahsulotni tahrirlash",
-      "createSubtitle": "Qoldiq kirim orqali qo'shiladi.",
-      "lowStockHint": "Qoldiq shu miqdorga tushsa, mahsulot \"kam qoldi\" deb belgilanadi.",
-      "isPanelHint": "Panel bo'lsa umumiy quvvat va narx backendda hisoblanadi.",
-      "panelTotalsHint": "Umumiy quvvat = quvvat × soni, umumiy narx = umumiy quvvat × 1 W narxi (backend hisoblaydi)."
-    },
-    "stockEntryForm": {
-      "eyebrow": "Kirim",
-      "createTitle": "Yangi kirim",
-      "editTitle": "Kirimni tahrirlash",
-      "createSubtitle": "Kirim saqlanganda mahsulot qoldig'i oshadi.",
-      "editSubtitle": "Miqdor o'zgarsa, qoldiq farq bo'yicha avtomatik qayta hisoblanadi. Qoldiq manfiy bo'lib qolsa, saqlanmaydi.",
-      "stockHint": "Saqlangandan keyin backend yangilaydi"
-    },
-    "saleForm": {
-      "eyebrow": "Sotuv",
-      "createTitle": "Yangi sotuv",
-      "editTitle": "Sotuvni tahrirlash",
-      "createSubtitle": "Sotuv saqlanganda mahsulot qoldig'idan ayiriladi.",
-      "editSubtitle": "Backend avval eski sotuvni qoldiqqa qaytaradi, keyin yangisini ayiradi. Qoldiq yetmasa, saqlanmaydi.",
-      "stockHint": "Sotuvdan oldingi qoldiq",
-      "stockEditHint": "Joriy sotuv allaqachon ayirilgan qoldiq",
-      "unitPriceHint": "Bo'sh qoldirilsa, sotuvdagi mavjud narx ishlatiladi.",
-      "noClient": "CRM mijoziga bog'lanmagan",
-      "clientHint": "Ixtiyoriy. Tanlansa, ism va telefon mijoz kartasidan olinadi."
-    },
-    "stats": {
-      "loading": "Statistika yuklanmoqda...",
-      "error": "Sklad statistikasini olib bo'lmadi.",
-      "labels": {
-        "items_count": "Mahsulotlar soni",
-        "total_items": "Mahsulotlar soni",
-        "total_quantity": "Umumiy qoldiq",
-        "low_stock_count": "Kam qolgan mahsulotlar",
-        "low_stock_items": "Kam qolgan mahsulotlar",
-        "stock_entries_count": "Kirimlar soni",
-        "sales_count": "Sotuvlar soni",
-        "total_stock_cost": "Kirimlar summasi",
-        "total_cost": "Kirimlar summasi",
-        "total_sales_amount": "Sotuvlar summasi",
-        "total_amount": "Sotuvlar summasi",
-        "total_paid_amount": "To'langan summa",
-        "paid_amount": "To'langan summa",
-        "total_debt": "Qarzdorlik",
-        "debt_amount": "Qarzdorlik"
-      }
-    },
-    "deleteDialog": {
-      "eyebrow": "O'chirish",
-      "stockEntryTitle": "Kirimni o'chirish",
-      "saleTitle": "Sotuvni o'chirish",
-      "description": "{{label}} yozuvi o'chiriladi. Sklad qoldig'i backendda qayta hisoblanadi.",
-      "confirm": "Ha, o'chirish",
-      "deleting": "O'chirilmoqda...",
-      "deleted": "O'chirildi. Qoldiq va statistika yangilandi.",
-      "error": "O'chirib bo'lmadi. Qayta urinib ko'ring."
     }
   }
 }

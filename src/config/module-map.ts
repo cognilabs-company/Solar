@@ -104,26 +104,6 @@ export const moduleMap: AppModule[] = [
     notes: 'Solar products and services catalog.',
   },
   {
-    id: 'warehouse',
-    label: 'Warehouse',
-    description: 'Warehouse items, stock entries and sales.',
-    category: 'operational',
-    priority: 'high',
-    priorityOrder: 3.5,
-    allowedRoles: ['developer', 'admin', 'operator'],
-    accessStrategy: 'permission-based',
-    pages: [
-      {
-        id: 'warehouse-overview',
-        label: 'Warehouse',
-        kind: 'list',
-        path: '/warehouse',
-        notes: 'Items, stock entries (kirim) and sales with edit dialogs.',
-      },
-    ],
-    notes: 'View needs warehouse.view, create/edit needs warehouse.manage. Delete is blocked on the backend.',
-  },
-  {
     id: 'chats',
     label: 'Chats',
     description: 'Client communication and messaging.',

@@ -95,9 +95,6 @@ function mapBackendPermissionToken(token: string): PermissionCode[] {
     'products.view': ['can_view_products'],
     'products.manage': ['can_manage_products'],
 
-    'warehouse.view': ['can_view_warehouse'],
-    'warehouse.manage': ['can_manage_warehouse'],
-
     'contracts.view': ['can_view_contracts'],
     'contracts.manage': ['can_manage_contracts'],
 

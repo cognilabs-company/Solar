@@ -46,7 +46,6 @@ export type AppIconName =
 	| 'clients'
 	| 'customers'
 	| 'products'
-	| 'warehouse'
 	| 'contracts'
 	| 'orders'
 	| 'couriers'
@@ -97,7 +96,6 @@ const ICON_MAP: Record<AppIconName, IconType> = {
 	clients: FiUsers,
 	customers: FiUsers,
 	products: FiBox,
-	warehouse: FiArchive,
 	contracts: FiFileText,
 	orders: FiShoppingBag,
 	couriers: FiTruck,

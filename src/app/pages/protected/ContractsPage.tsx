@@ -22,7 +22,6 @@ import {
 } from '../../../components/shared/page'
 import { useList } from '../../../components/hooks'
 import ContractDeleteDialog from '../../../features/contracts/components/ContractDeleteDialog'
-import ContractDocumentFormPanel from '../../../features/contracts/components/ContractDocumentFormPanel'
 import { ContractsDetailPanel } from '../../../features/contracts/components/ContractsDetailPanel'
 import { ContractsFormPanel } from '../../../features/contracts/components/ContractsFormPanel'
 import { extractApiErrorMessage } from '../../../lib/api-error'
@@ -172,7 +171,6 @@ function ContractsPage() {
 	const [isRecalculating, setIsRecalculating] = useState(false)
 	const [detailRefreshToken, setDetailRefreshToken] = useState(0)
 	const [isPricingOpen, setIsPricingOpen] = useState(false)
-	const [isDocumentFormOpen, setIsDocumentFormOpen] = useState(false)
 	const [isPricingLoading, setIsPricingLoading] = useState(false)
 	const [pricingMatrix, setPricingMatrix] = useState<PricingMatrixData | null>(
 		null,
@@ -455,14 +453,6 @@ function ContractsPage() {
 										</button>
 										<button
 											type='button'
-											className='inline-flex min-h-9 items-center gap-2 rounded-lg bg-surface-card px-3.5 text-sm font-semibold text-text-primary shadow-sm ring-1 ring-border-soft/40 transition duration-fast hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25'
-											onClick={() => setIsDocumentFormOpen(true)}
-										>
-											<AppIcon name='file' className='h-4 w-4' aria-hidden='true' />
-											{t('contractsPage.document.button')}
-										</button>
-										<button
-											type='button'
 											className='inline-flex min-h-9 items-center gap-2 rounded-lg bg-primary px-3.5 text-sm font-semibold text-primary-foreground transition duration-fast hover:bg-primary-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35'
 											onClick={() => {
 												setEditingContract(null)
@@ -714,15 +704,6 @@ function ContractsPage() {
 						/>
 					</div>
 				</div>
-			) : null}
-
-			{isDocumentFormOpen ? (
-				<ContractDocumentFormPanel
-					onClose={() => setIsDocumentFormOpen(false)}
-					onGenerated={() => {
-						void actions.refresh()
-					}}
-				/>
 			) : null}
 
 			{contractToDelete ? (
