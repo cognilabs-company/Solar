@@ -25,6 +25,7 @@ import ContractDeleteDialog from '../../../features/contracts/components/Contrac
 import ContractDocumentFormPanel from '../../../features/contracts/components/ContractDocumentFormPanel'
 import { ContractsDetailPanel } from '../../../features/contracts/components/ContractsDetailPanel'
 import { ContractsFormPanel } from '../../../features/contracts/components/ContractsFormPanel'
+import { extractApiErrorMessage } from '../../../lib/api-error'
 import { services } from '../../../services'
 import { useAuth } from '../../../auth'
 import type {
@@ -130,6 +131,7 @@ function ContractsPage() {
 		},
 		edit: t('contractsPage.edit'),
 		delete: t('contractsPage.delete'),
+		deleteError: t('contractsPage.deleteError'),
 		pricing: {
 			button: t('contractsPage.pricing.button'),
 			title: t('contractsPage.pricing.title'),
@@ -166,6 +168,7 @@ function ContractsPage() {
 	const [isFormOpen, setIsFormOpen] = useState(false)
 	const [contractToDelete, setContractToDelete] = useState<Contract | null>(null)
 	const [isDeleting, setIsDeleting] = useState(false)
+	const [deleteError, setDeleteError] = useState<string | null>(null)
 	const [isRecalculating, setIsRecalculating] = useState(false)
 	const [detailRefreshToken, setDetailRefreshToken] = useState(0)
 	const [isPricingOpen, setIsPricingOpen] = useState(false)
@@ -344,13 +347,27 @@ function ContractsPage() {
 			return
 		}
 		setIsDeleting(true)
+		setDeleteError(null)
 		try {
 			await services.contracts.deleteContract(contractToDelete.id)
 			setContractToDelete(null)
 			if (selectedContractId === contractToDelete.id) {
 				setSelectedContractId(null)
 			}
-			await actions.refresh()
+
+			// Removing the only row of a later page would leave `page` pointing past
+			// the end; DRF answers that with 404 "Invalid page" and the list would
+			// keep showing the deleted contract. Step back a page instead.
+			const currentPage = filters.page ?? 1
+			if (state.items.length <= 1 && currentPage > 1) {
+				const previousPage = currentPage - 1
+				actions.setPage(previousPage)
+				setFilters(current => ({ ...current, page: previousPage }))
+			} else {
+				await actions.refresh()
+			}
+		} catch (error) {
+			setDeleteError(extractApiErrorMessage(error, tx.deleteError))
 		} finally {
 			setIsDeleting(false)
 		}
@@ -712,9 +729,11 @@ function ContractsPage() {
 				<ContractDeleteDialog
 					contract={contractToDelete}
 					isDeleting={isDeleting}
+					errorMessage={deleteError}
 					onCancel={() => {
 						if (!isDeleting) {
 							setContractToDelete(null)
+							setDeleteError(null)
 						}
 					}}
 					onConfirm={() => {

@@ -25,6 +25,7 @@ import AISettingDeleteDialog from '../../../features/ai-settings/components/AISe
 import AISettingDetailPanel from '../../../features/ai-settings/components/AISettingDetailPanel';
 import AISettingFormPanel from '../../../features/ai-settings/components/AISettingFormPanel';
 import { usePersistentState } from '../../../lib/persistent-state';
+import { extractApiErrorMessage } from '../../../lib/api-error';
 import { services } from '../../../services';
 import type {
   AISetting,
@@ -124,6 +125,7 @@ function AiSettingsPage() {
 
   const [settingToDelete, setSettingToDelete] = useState<AISetting | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -417,6 +419,7 @@ function AiSettingsPage() {
     }
 
     setIsDeleting(true);
+    setDeleteError(null);
     try {
       const deleted = await services.aiSettings.deleteSetting(settingToDelete.id);
       if (!deleted) {
@@ -429,8 +432,9 @@ function AiSettingsPage() {
 
       setSettingToDelete(null);
       setReloadCursor((current) => current + 1);
-    } catch {
-      // Dialog remains open on failure.
+    } catch (error) {
+      // Dialog remains open on failure, with the reason (e.g. active config).
+      setDeleteError(extractApiErrorMessage(error, t('aiSettings.deleteDialog.error')));
     } finally {
       setIsDeleting(false);
     }
@@ -625,9 +629,11 @@ function AiSettingsPage() {
         <AISettingDeleteDialog
           setting={settingToDelete}
           isDeleting={isDeleting}
+          errorMessage={deleteError}
           onCancel={() => {
             if (!isDeleting) {
               setSettingToDelete(null);
+              setDeleteError(null);
             }
           }}
           onConfirm={() => {

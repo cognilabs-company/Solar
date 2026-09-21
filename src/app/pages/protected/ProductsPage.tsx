@@ -29,6 +29,7 @@ import ProductFormPanel from '../../../features/products/components/ProductFormP
 import { formatCurrencyAmount } from '../../../constants';
 import { formatLocalizedDate } from '../../../i18n/date-format';
 import { usePersistentState } from '../../../lib/persistent-state';
+import { extractApiErrorMessage } from '../../../lib/api-error';
 import { services } from '../../../services';
 import type {
   EntityId,
@@ -167,6 +168,8 @@ function ProductsPage() {
 
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [categoryDeleteError, setCategoryDeleteError] = useState<string | null>(null);
 
   const [isCategoryFormOpen, setIsCategoryFormOpen] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
@@ -551,6 +554,7 @@ function ProductsPage() {
     }
 
     setIsDeleting(true);
+    setDeleteError(null);
 
     try {
       await services.products.deleteProduct(productToDelete.id);
@@ -559,6 +563,9 @@ function ProductsPage() {
       }
       setProductToDelete(null);
       setReloadCursor((current) => current + 1);
+    } catch (error) {
+      // Previously an unhandled rejection: dialog stayed open with no feedback.
+      setDeleteError(extractApiErrorMessage(error, t('products.deleteDialog.deleteError')));
     } finally {
       setIsDeleting(false);
     }
@@ -606,10 +613,16 @@ function ProductsPage() {
     }
 
     setIsCategoryDeleting(true);
+    setCategoryDeleteError(null);
     try {
       await services.products.deleteProductCategory(categoryToDelete.id);
       setCategoryToDelete(null);
       setReloadCursor((current) => current + 1);
+    } catch (error) {
+      // A category that still has products is refused by the backend - show it.
+      setCategoryDeleteError(
+        extractApiErrorMessage(error, t('products.categoryDeleteDialog.error')),
+      );
     } finally {
       setIsCategoryDeleting(false);
     }
@@ -1199,9 +1212,11 @@ function ProductsPage() {
         <ProductDeleteDialog
           product={productToDelete}
           isDeleting={isDeleting}
+          errorMessage={deleteError}
           onCancel={() => {
             if (!isDeleting) {
               setProductToDelete(null);
+              setDeleteError(null);
             }
           }}
           onConfirm={() => {
@@ -1233,9 +1248,11 @@ function ProductsPage() {
         <ProductCategoryDeleteDialog
           category={categoryToDelete}
           isDeleting={isCategoryDeleting}
+          errorMessage={categoryDeleteError}
           onCancel={() => {
             if (!isCategoryDeleting) {
               setCategoryToDelete(null);
+              setCategoryDeleteError(null);
             }
           }}
           onConfirm={() => {

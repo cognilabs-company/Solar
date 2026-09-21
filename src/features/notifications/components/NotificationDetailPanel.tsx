@@ -10,6 +10,7 @@ import {
 	LoadingState,
 	PageCard,
 } from '../../../components/shared/page'
+import { extractApiErrorMessage } from '../../../lib/api-error'
 import { services } from '../../../services'
 import type { AppNotification, EntityId } from '../../../types/domain'
 import {
@@ -46,6 +47,7 @@ function NotificationDetailPanel({
 	const [notification, setNotification] = useState<AppNotification | null>(null)
 	const [isLoading, setIsLoading] = useState(true)
 	const [hasError, setHasError] = useState(false)
+	const [deleteError, setDeleteError] = useState<string | null>(null)
 	const [isDeleting, setIsDeleting] = useState(false)
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
@@ -128,14 +130,19 @@ function NotificationDetailPanel({
 		}
 
 		setIsDeleting(true)
+		setDeleteError(null)
 		try {
 			await services.notifications.delete(notification.id)
 			onNotificationDeleted(notification.id)
 			window.dispatchEvent(new CustomEvent('notifications:changed'))
+			setIsDeleteDialogOpen(false)
 			onClose()
+		} catch (error) {
+			// Used to close the dialog in `finally` even on failure, which looked
+			// like a successful delete. Keep it open and show the reason instead.
+			setDeleteError(extractApiErrorMessage(error, t('notifications.deleteError')))
 		} finally {
 			setIsDeleting(false)
-			setIsDeleteDialogOpen(false)
 		}
 	}
 
@@ -333,10 +340,12 @@ function NotificationDetailPanel({
 					cancelLabel={t('common.cancel')}
 					confirmLabel={isDeleting ? t('notifications.bulk.deletingOne') : t('notifications.bulk.deleteOne')}
 					isBusy={isDeleting}
+					errorMessage={deleteError}
 					confirmTone='danger'
 					onCancel={() => {
 						if (!isDeleting) {
 							setIsDeleteDialogOpen(false)
+							setDeleteError(null)
 						}
 					}}
 					onConfirm={() => {

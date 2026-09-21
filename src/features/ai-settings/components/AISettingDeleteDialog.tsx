@@ -4,6 +4,7 @@ import type { AISetting } from '../../../types/domain';
 interface AISettingDeleteDialogProps {
   setting: AISetting;
   isDeleting: boolean;
+  errorMessage?: string | null;
   onCancel: () => void;
   onConfirm: () => void;
 }
@@ -11,6 +12,7 @@ interface AISettingDeleteDialogProps {
 function AISettingDeleteDialog({
   setting,
   isDeleting,
+  errorMessage,
   onCancel,
   onConfirm,
 }: AISettingDeleteDialogProps) {
@@ -41,6 +43,14 @@ function AISettingDeleteDialog({
           <p className="m-0 text-sm leading-6 text-text-secondary">
             {t('aiSettings.deleteDialog.description')}
           </p>
+          {errorMessage ? (
+            <p
+              className="m-0 rounded-lg bg-danger-bg px-3 py-2 text-sm font-semibold text-danger"
+              role="alert"
+            >
+              {errorMessage}
+            </p>
+          ) : null}
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-2">

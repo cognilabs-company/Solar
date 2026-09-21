@@ -27,6 +27,7 @@ import UserFormPanel from '../../../features/users/components/UserFormPanel';
 import { formatLocalizedDate } from '../../../i18n/date-format';
 import { getUserRoleLabel } from '../../../i18n/labels';
 import { usePersistentState } from '../../../lib/persistent-state';
+import { extractApiErrorMessage } from '../../../lib/api-error';
 import { services } from '../../../services';
 import type {
   CreateUserInput,
@@ -97,6 +98,7 @@ function UsersPage() {
 
   const [userToDelete, setUserToDelete] = useState<ManagedUser | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -311,6 +313,7 @@ function UsersPage() {
     }
 
     setIsDeleting(true);
+    setDeleteError(null);
 
     try {
       await services.users.deleteUser(userToDelete.id);
@@ -321,8 +324,9 @@ function UsersPage() {
 
       setUserToDelete(null);
       setReloadCursor((current) => current + 1);
-    } catch {
-      // Keep dialog open if deletion fails.
+    } catch (error) {
+      // Keep dialog open and say why (e.g. cannot delete yourself / last admin).
+      setDeleteError(extractApiErrorMessage(error, t('users.deleteDialog.error')));
     } finally {
       setIsDeleting(false);
     }
@@ -683,9 +687,11 @@ function UsersPage() {
         <UserDeleteDialog
           user={userToDelete}
           isDeleting={isDeleting}
+          errorMessage={deleteError}
           onCancel={() => {
             if (!isDeleting) {
               setUserToDelete(null);
+              setDeleteError(null);
             }
           }}
           onConfirm={() => {

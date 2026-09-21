@@ -7,6 +7,7 @@ import ClientDeleteDialog from '../../../features/clients/components/ClientDelet
 import { ClientsDetailPanel } from '../../../features/clients/components/ClientsDetailPanel';
 import { ClientsFormPanel } from '../../../features/clients/components/ClientsFormPanel';
 import { ClientsListView } from '../../../features/clients/components/ClientsListView';
+import { extractApiErrorMessage } from '../../../lib/api-error';
 import { services } from '../../../services';
 import { useAuth } from '../../../auth';
 import type { Client } from '../../../services/contracts';
@@ -27,6 +28,7 @@ function ClientsPage() {
     detailOpen: t('clients.page.detailOpen'),
     errorTitle: t('clients.page.errorTitle'),
     errorDescription: t('clients.page.errorDescription'),
+    deleteError: t('clients.page.deleteError'),
   };
   const importTx = {
     importClients: t('clients.importExport.importClients'),
@@ -54,6 +56,7 @@ function ClientsPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [listRefreshKey, setListRefreshKey] = useState(0);
   const [stats, setStats] = useState({ visible: 0, total: 0, loading: true });
   const [hasError, setHasError] = useState(false);
@@ -292,6 +295,7 @@ function ClientsPage() {
     }
 
     setIsDeleting(true);
+    setDeleteError(null);
     try {
       await services.clients.deleteClient(clientToDelete.id);
       if (selectedClientId === clientToDelete.id) {
@@ -299,8 +303,10 @@ function ClientsPage() {
       }
       setClientToDelete(null);
       setListRefreshKey((current) => current + 1);
-    } catch {
-      setHasError(true);
+    } catch (error) {
+      // Keep the dialog open with the reason (e.g. client still has contracts)
+      // instead of swapping the whole page for an error state.
+      setDeleteError(extractApiErrorMessage(error, tx.deleteError));
     } finally {
       setIsDeleting(false);
     }
@@ -474,9 +480,11 @@ function ClientsPage() {
         <ClientDeleteDialog
           client={clientToDelete}
           isDeleting={isDeleting}
+          errorMessage={deleteError}
           onCancel={() => {
             if (!isDeleting) {
               setClientToDelete(null);
+              setDeleteError(null);
             }
           }}
           onConfirm={() => {

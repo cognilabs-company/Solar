@@ -4,6 +4,7 @@ import type { Contract } from '../../../services/contracts'
 interface ContractDeleteDialogProps {
 	contract: Contract
 	isDeleting: boolean
+	errorMessage?: string | null
 	onCancel: () => void
 	onConfirm: () => void
 }
@@ -11,6 +12,7 @@ interface ContractDeleteDialogProps {
 function ContractDeleteDialog({
 	contract,
 	isDeleting,
+	errorMessage,
 	onCancel,
 	onConfirm,
 }: ContractDeleteDialogProps) {
@@ -58,6 +60,14 @@ function ContractDeleteDialog({
 						{tx.title}
 					</h2>
 					<p className='m-0 text-sm leading-6 text-text-secondary'>{tx.description}</p>
+					{errorMessage ? (
+						<p
+							className='m-0 rounded-lg bg-danger-bg px-3 py-2 text-sm font-semibold text-danger'
+							role='alert'
+						>
+							{errorMessage}
+						</p>
+					) : null}
 				</div>
 
 				<div className='mt-4 flex flex-wrap items-center gap-2'>

@@ -7,6 +7,7 @@ import ClientDeleteDialog from '../../../features/clients/components/ClientDelet
 import { ClientsDetailPanel } from '../../../features/clients/components/ClientsDetailPanel';
 import { ClientsFormPanel } from '../../../features/clients/components/ClientsFormPanel';
 import { WebappClientsListView } from '../../../features/clients/components/WebappClientsListView';
+import { extractApiErrorMessage } from '../../../lib/api-error';
 import { services } from '../../../services';
 import { useAuth } from '../../../auth';
 import type { Client } from '../../../services/contracts';
@@ -28,6 +29,7 @@ function WebappClientsPage() {
         detailOpen: 'Профиль открыт',
         errorTitle: 'WebApp клиенты недоступны',
         errorDescription: 'Не удалось загрузить список WebApp клиентов.',
+        deleteError: 'Не удалось удалить клиента.',
       }
     : {
         eyebrow: 'WebApp',
@@ -37,6 +39,7 @@ function WebappClientsPage() {
         detailOpen: 'Profil ochiq',
         errorTitle: 'WebApp mijozlari mavjud emas',
         errorDescription: "WebApp mijozlar ro'yxatini yuklab bo'lmadi.",
+        deleteError: "Mijozni o'chirib bo'lmadi.",
       };
 
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
@@ -44,6 +47,7 @@ function WebappClientsPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [listRefreshKey, setListRefreshKey] = useState(0);
   const [stats, setStats] = useState({ visible: 0, total: 0, loading: true });
   const [hasError, setHasError] = useState(false);
@@ -91,6 +95,7 @@ function WebappClientsPage() {
     }
 
     setIsDeleting(true);
+    setDeleteError(null);
     try {
       await services.clients.deleteClient(clientToDelete.id);
       if (selectedClientId === clientToDelete.id) {
@@ -98,8 +103,10 @@ function WebappClientsPage() {
       }
       setClientToDelete(null);
       setListRefreshKey((current) => current + 1);
-    } catch {
-      setHasError(true);
+    } catch (error) {
+      // Keep the dialog open with the reason (e.g. client still has contracts)
+      // instead of swapping the whole page for an error state.
+      setDeleteError(extractApiErrorMessage(error, tx.deleteError));
     } finally {
       setIsDeleting(false);
     }
@@ -221,9 +228,11 @@ function WebappClientsPage() {
         <ClientDeleteDialog
           client={clientToDelete}
           isDeleting={isDeleting}
+          errorMessage={deleteError}
           onCancel={() => {
             if (!isDeleting) {
               setClientToDelete(null);
+              setDeleteError(null);
             }
           }}
           onConfirm={() => {

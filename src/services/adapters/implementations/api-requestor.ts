@@ -118,7 +118,19 @@ export class ApiRequestor {
 				return undefined as T
 			}
 
-			const json = await response.json()
+			// DELETE (and some custom actions) answer 200 with an empty body -
+			// `response.json()` would throw and make a successful call look failed.
+			const rawBody = await response.text()
+			if (!rawBody.trim().length) {
+				return undefined as T
+			}
+
+			let json: unknown
+			try {
+				json = JSON.parse(rawBody)
+			} catch {
+				throw new ServiceErrorClass(response.status, 'Invalid JSON response')
+			}
 			
 			if (json && 
 				typeof json === 'object' && 

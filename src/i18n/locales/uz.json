@@ -460,7 +460,8 @@
       "title": "\"{{name}}\" lidini o'chirish",
       "description": "Ushbu amal qaytarilmaydi. Lid tarixdan butunlay olib tashlanadi.",
       "deleting": "O'chirilmoqda...",
-      "confirm": "Ha, o'chirish"
+      "confirm": "Ha, o'chirish",
+      "error": "Lidni o'chirib bo'lmadi."
     },
     "detail": {
       "ariaLabel": "Lid tafsilotlari",
@@ -702,7 +703,8 @@
       "title": "\"{{name}}\" foydalanuvchisini o'chirish",
       "description": "Ushbu amal qaytarilmaydi. Foydalanuvchi butunlay o'chiriladi.",
       "deleting": "O'chirilmoqda...",
-      "confirm": "Ha, o'chirish"
+      "confirm": "Ha, o'chirish",
+      "error": "Foydalanuvchini o'chirib bo'lmadi."
     }
   },
   "products": {
@@ -813,7 +815,8 @@
       "title": "\"{{name}}\" kategoriyasini o'chirasizmi?",
       "description": "Bu amal kategoriyani ro'yxatdan o'chiradi va ortga qaytarib bo'lmaydi.",
       "confirm": "Kategoriyani o'chirish",
-      "deleting": "O'chirilmoqda..."
+      "deleting": "O'chirilmoqda...",
+      "error": "Kategoriyani o'chirib bo'lmadi."
     },
     "detail": {
       "eyebrow": "Mahsulot profili",
@@ -1557,7 +1560,8 @@
       "title": "\"{{name}}\" konfiguratsiyasini o'chirasizmi?",
       "description": "Bu amal konfiguratsiyani ro'yxatdan o'chiradi. Faol konfiguratsiyani o'chirishga ruxsat berilmaydi.",
       "confirm": "Konfiguratsiyani o'chirish",
-      "deleting": "O'chirilmoqda..."
+      "deleting": "O'chirilmoqda...",
+      "error": "Konfiguratsiyani o'chirib bo'lmadi."
     }
   },
   "integrations": {
@@ -1715,7 +1719,8 @@
       "title": "\"{{label}}\" konfiguratsiyasini o'chirasizmi?",
       "description": "Bu amal konfiguratsiyani ro'yxatdan o'chiradi va ortga qaytarib bo'lmaydi.",
       "confirm": "Konfiguratsiyani o'chirish",
-      "deleting": "O'chirilmoqda..."
+      "deleting": "O'chirilmoqda...",
+      "error": "Konfiguratsiyani o'chirib bo'lmadi."
     }
   },
   "logs": {
@@ -2273,7 +2278,8 @@
         "quantity": "Soni",
         "price": "Narxi"
       }
-    }
+    },
+    "deleteError": "Shartnomani o'chirib bo'lmadi."
   },
   "operatorKpi": {
     "eyebrow": "Samaradorlik",
@@ -2362,7 +2368,8 @@
       "visible": "ko'rinmoqda",
       "detailOpen": "Profil ochiq",
       "errorTitle": "Mijozlar mavjud emas",
-      "errorDescription": "Mijozlar ro`yxatini yuklab bo`lmadi."
+      "errorDescription": "Mijozlar ro`yxatini yuklab bo`lmadi.",
+      "deleteError": "Mijozni o'chirib bo'lmadi."
     }
   },
   "notifications": {
@@ -2417,7 +2424,9 @@
     "createdAt": "Qo'shilgan",
     "updatedAt": "Yangilangan",
     "user": "Foydalanuvchi",
-    "additionalInfo": "Qo'shimcha ma'lumot"
+    "additionalInfo": "Qo'shimcha ma'lumot",
+    "deleteError": "Bildirishnomani o'chirib bo'lmadi.",
+    "deleteAllError": "Bildirishnomalarni o'chirib bo'lmadi."
   },
   "chatPage": {
     "title": "Suhbatlar",

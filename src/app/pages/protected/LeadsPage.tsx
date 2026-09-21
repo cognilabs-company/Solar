@@ -24,6 +24,7 @@ import LeadFormPanel from '../../../features/leads/components/LeadFormPanel'
 import { formatLocalizedDate } from '../../../i18n/date-format'
 import { getChannelLabel, getLeadStatusLabel } from '../../../i18n/labels'
 import { usePersistentState } from '../../../lib/persistent-state'
+import { extractApiErrorMessage } from '../../../lib/api-error'
 import { services } from '../../../services'
 import { useAuth } from '../../../auth'
 import type {
@@ -239,6 +240,7 @@ function LeadsPage() {
 
 	const [leadToDelete, setLeadToDelete] = useState<Lead | null>(null)
 	const [isDeleting, setIsDeleting] = useState(false)
+	const [deleteError, setDeleteError] = useState<string | null>(null)
 
 	const location = useLocation()
 	const navigate = useNavigate()
@@ -473,6 +475,7 @@ function LeadsPage() {
 		}
 
 		setIsDeleting(true)
+		setDeleteError(null)
 
 		try {
 			await services.leads.deleteLead(leadToDelete.id)
@@ -483,8 +486,9 @@ function LeadsPage() {
 
 			setLeadToDelete(null)
 			setReloadCursor(current => current + 1)
-		} catch {
-			// keep modal open if deletion fails
+		} catch (error) {
+			// keep modal open and show why deletion failed
+			setDeleteError(extractApiErrorMessage(error, t('leads.deleteDialog.error')))
 		} finally {
 			setIsDeleting(false)
 		}
@@ -854,9 +858,11 @@ function LeadsPage() {
 				<LeadDeleteDialog
 					lead={leadToDelete}
 					isDeleting={isDeleting}
+					errorMessage={deleteError}
 					onCancel={() => {
 						if (!isDeleting) {
 							setLeadToDelete(null)
+							setDeleteError(null)
 						}
 					}}
 					onConfirm={() => {

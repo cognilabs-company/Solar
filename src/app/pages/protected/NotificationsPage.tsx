@@ -16,6 +16,7 @@ import {
   PageSection,
 } from '../../../components/shared/page';
 import ConfirmDialog from '../../../components/shared/dialogs/ConfirmDialog';
+import { extractApiErrorMessage } from '../../../lib/api-error';
 import NotificationDetailPanel from '../../../features/notifications/components/NotificationDetailPanel';
 import NotificationList from '../../../features/notifications/components/NotificationList';
 import { getNotificationChannelLabel } from '../../../features/notifications/utils/notification-format';
@@ -79,6 +80,7 @@ function NotificationsPage() {
   const [reloadCursor, setReloadCursor] = useState(0);
   const [isMarkingAllRead, setIsMarkingAllRead] = useState(false);
   const [isDeletingAll, setIsDeletingAll] = useState(false);
+  const [deleteAllError, setDeleteAllError] = useState<string | null>(null);
   const [isDeleteAllDialogOpen, setIsDeleteAllDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -224,6 +226,7 @@ function NotificationsPage() {
 
   async function confirmDeleteAll() {
     setIsDeletingAll(true);
+    setDeleteAllError(null);
     try {
       await services.notifications.deleteAll();
       setNotifications([]);
@@ -231,9 +234,12 @@ function NotificationsPage() {
       setCurrentPage(1);
       setReloadCursor((current) => current + 1);
       window.dispatchEvent(new CustomEvent('notifications:changed'));
+      setIsDeleteAllDialogOpen(false);
+    } catch (error) {
+      // Previously an unhandled rejection that also closed the dialog.
+      setDeleteAllError(extractApiErrorMessage(error, t('notifications.deleteAllError')));
     } finally {
       setIsDeletingAll(false);
-      setIsDeleteAllDialogOpen(false);
     }
   }
 
@@ -407,10 +413,12 @@ function NotificationsPage() {
             isDeletingAll ? t('notifications.bulk.deletingAll') : t('notifications.bulk.deleteAll')
           }
           isBusy={isDeletingAll}
+          errorMessage={deleteAllError}
           confirmTone="danger"
           onCancel={() => {
             if (!isDeletingAll) {
               setIsDeleteAllDialogOpen(false);
+              setDeleteAllError(null);
             }
           }}
           onConfirm={() => {

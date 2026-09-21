@@ -32,6 +32,7 @@ import {
   maskSecretValue,
 } from '../../../features/integrations/utils/integration-format';
 import { usePersistentState } from '../../../lib/persistent-state';
+import { extractApiErrorMessage } from '../../../lib/api-error';
 import { services } from '../../../services';
 import type {
   IntegrationConfig,
@@ -133,6 +134,7 @@ function IntegrationsPage() {
   const [formErrorMessage, setFormErrorMessage] = useState<string | null>(null);
   const [configToDelete, setConfigToDelete] = useState<IntegrationConfig | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState(0);
 
   useEffect(() => {
@@ -277,12 +279,18 @@ function IntegrationsPage() {
     }
 
     setIsDeleting(true);
+    setDeleteError(null);
 
     try {
       await services.integrations.deleteConfig(configToDelete.id);
       setConfigToDelete(null);
       setConfigs((current) => current.filter((item) => item.id !== configToDelete.id));
       setRefreshToken((current) => current + 1);
+    } catch (error) {
+      // Previously an unhandled rejection: dialog stayed open with no feedback.
+      setDeleteError(
+        extractApiErrorMessage(error, t('integrations.deleteDialog.error')),
+      );
     } finally {
       setIsDeleting(false);
     }
@@ -611,9 +619,11 @@ function IntegrationsPage() {
         <IntegrationConfigDeleteDialog
           config={configToDelete}
           isDeleting={isDeleting}
+          errorMessage={deleteError}
           onCancel={() => {
             if (!isDeleting) {
               setConfigToDelete(null);
+              setDeleteError(null);
             }
           }}
           onConfirm={() => {
