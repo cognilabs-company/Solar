@@ -10,7 +10,6 @@ import { apiDashboardService } from './api/dashboard-service'
 import { apiIntegrationsService } from './api/integrations.service'
 import { apiAISettingsService } from './api/ai-settings.service'
 import { apiLogsService } from './api/common.service'
-import { apiSubsidyService } from './api/subsidy.service'
 import { apiLeadService } from './api/lead-service'
 import { apiClientService } from './api/client-service'
 import { apiNotificationService } from './api/notification-service'
@@ -88,11 +87,6 @@ export const services = {
 		getPublicCompanyInfo: logsApi.getPublicCompanyInfo.bind(logsApi),
 		calculateSubsidy: logsApi.calculateSubsidy.bind(logsApi),
 	} as any,
-	subsidy: {
-		getSettings: apiSubsidyService.getSettings,
-		patchSettings: apiSubsidyService.patchSettings,
-		calculate: apiSubsidyService.calculate,
-	},
 	leads: {
 		listLeads: leadApi.listLeads.bind(leadApi),
 		getLead: leadApi.getLeadById.bind(leadApi),

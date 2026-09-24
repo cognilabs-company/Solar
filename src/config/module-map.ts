@@ -217,25 +217,6 @@ export const moduleMap: AppModule[] = [
     notes: 'Developer-only AI configuration.',
   },
   {
-    id: 'subsidy-settings',
-    label: 'Subsidy Settings',
-    description: 'Government subsidy percent, limits and calculator settings.',
-    category: 'system',
-    priority: 'medium',
-    priorityOrder: 7.5,
-    allowedRoles: ['developer', 'admin'],
-    accessStrategy: 'static-role-based',
-    pages: [
-      {
-        id: 'subsidy-settings-overview',
-        label: 'Subsidy Settings',
-        kind: 'configuration',
-        path: '/subsidy-settings',
-      },
-    ],
-    notes: 'Admin-managed subsidy config consumed by the public calculator API.',
-  },
-  {
     id: 'logs',
     label: 'Logs',
     description: 'System and API audit logs.',

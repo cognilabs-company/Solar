@@ -44,7 +44,6 @@ const MODULE_PATH_BY_ROUTE_ID: Record<string, string> = {
 	users: routePaths.users,
 	'operator-kpi': routePaths['operator-kpi'],
 	integrations: routePaths.integrations,
-	'subsidy-settings': routePaths['subsidy-settings'],
 	'ai-settings': routePaths['ai-settings'],
 	logs: routePaths.logs,
 }
@@ -108,11 +107,6 @@ export function canAccessRouteForUser(
 	// Business rule: Integrations module is developer-only.
 	if (routeId === 'integrations') {
 		return false
-	}
-
-	// Business rule: subsidy settings are managed by admins (and developers).
-	if (routeId === 'subsidy-settings') {
-		return user.role === 'admin'
 	}
 
 	const requiredPermission = ROUTE_REQUIRED_PERMISSIONS[routeId]

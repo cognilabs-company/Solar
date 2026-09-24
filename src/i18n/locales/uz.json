@@ -118,10 +118,6 @@
     "audit-requests": {
       "title": "Audit so'rovlari",
       "description": "Energiya auditi so'rovlari va xulosa jarayoni."
-    },
-    "subsidy-settings": {
-      "title": "Subsidiya sozlamalari",
-      "description": "Subsidiya foizi, limiti va kalkulyator sozlamalari."
     }
   },
   "navigation": {
@@ -150,8 +146,7 @@
       "notifications": "Ogohlantirishlar",
       "ai-settings": "Ish joyi",
       "logs": "Audit",
-      "audit-requests": "Energiya auditi",
-      "subsidy-settings": "Subsidiya"
+      "audit-requests": "Energiya auditi"
     }
   },
   "topbar": {
@@ -2453,76 +2448,6 @@
       "timeUnavailable": "Mavjud emas",
       "requestOperator": "Operator chaqirish",
       "operatorRequested": "Operator so'rovi yuborilgan"
-    }
-  },
-  "subsidy": {
-    "eyebrow": "Hisob-kitob",
-    "title": "Subsidiya sozlamalari",
-    "subtitle": "Subsidiya foizi, limiti va quvvat chegarasi backendda saqlanadi. Kalkulyator shu qiymatlar asosida ishlaydi.",
-    "statusActive": "Subsidiya faol",
-    "statusInactive": "O'chirilgan",
-    "loadingTitle": "Sozlamalar yuklanmoqda",
-    "loadingDescription": "Subsidiya konfiguratsiyasi olinmoqda.",
-    "errorTitle": "Sozlamalarni olib bo'lmadi",
-    "errorDescription": "Subsidiya sozlamalarini yuklashda xatolik. Sahifani yangilab ko'ring.",
-    "readOnlyHint": "Sizda subsidiya sozlamalarini o'zgartirish huquqi yo'q.",
-    "summary": {
-      "percent": "Subsidiya foizi",
-      "maxAmount": "Maksimal subsidiya",
-      "maxPower": "Maksimal quvvat"
-    },
-    "sections": {
-      "settingsTitle": "Asosiy sozlamalar",
-      "settingsDescription": "Foiz, maksimal summa va quvvat chegarasi. Saqlangandan keyin kalkulyator yangi qiymatlar bilan ishlaydi.",
-      "calculatorTitle": "Kalkulyator tekshiruvi",
-      "calculatorDescription": "Public calculator API orqali natijani tekshiring. Hisob-kitob faqat backendda bajariladi."
-    },
-    "form": {
-      "enabled": "Subsidiya kalkulyatori",
-      "enabledHint": "O'chirilsa, katalog va webappda subsidiya ko'rsatilmaydi.",
-      "percent": "Subsidiya foizi",
-      "maxAmount": "Maksimal subsidiya summasi",
-      "maxPower": "Maksimal quvvat",
-      "guidePowers": "Quvvat variantlari",
-      "guidePowersHint": "Vergul bilan ajrating, masalan: 3, 5, 8, 10.",
-      "save": "Saqlash",
-      "saving": "Saqlanmoqda...",
-      "reset": "Bekor qilish",
-      "saved": "Sozlamalar saqlandi.",
-      "saveError": "Sozlamalarni saqlab bo'lmadi.",
-      "percentError": "Foiz 0 dan 100 gacha bo'lishi kerak.",
-      "amountError": "Maksimal summani kiriting.",
-      "powerError": "Quvvat manfiy bo'lmasligi kerak.",
-      "guidePowersError": "Kamida bitta quvvat variantini kiriting."
-    },
-    "confirm": {
-      "eyebrow": "Tasdiqlash",
-      "title": "Subsidiya sozlamalarini saqlash",
-      "description": "Yangi qiymatlar barcha kalkulyator so'rovlariga darhol ta'sir qiladi. Davom etasizmi?",
-      "confirm": "Ha, saqlash",
-      "cancel": "Bekor qilish"
-    },
-    "calculator": {
-      "title": "Subsidiya kalkulyatori",
-      "description": "Panel, inverter va quvvatni tanlang - natija backenddan keladi.",
-      "panelType": "Panel turi",
-      "inverterType": "Inverter turi",
-      "requestedPower": "So'ralgan quvvat",
-      "auditPower": "Audit quvvati",
-      "auditPowerPlaceholder": "Ixtiyoriy",
-      "auditPowerHint": "Kiritilsa, subsidiya shu quvvatga qarab hisoblanadi.",
-      "calculate": "Hisoblash",
-      "calculating": "Hisoblanmoqda...",
-      "empty": "Natijani ko'rish uchun hisoblang.",
-      "error": "Hisoblashda xatolik bo'ldi, qayta urinib ko'ring.",
-      "powerError": "Quvvatni to'g'ri kiriting.",
-      "disabledNotice": "Subsidiya hozir o'chirilgan - mijoz to'liq summani to'laydi.",
-      "basePrice": "Umumiy narx",
-      "subsidyAmount": "Davlat subsidiyasi",
-      "customerAmount": "Mijoz to'laydi",
-      "referencePower": "Subsidiya quvvati",
-      "percent": "Subsidiya foizi",
-      "maxSubsidy": "Maksimal subsidiya"
     }
   }
 }

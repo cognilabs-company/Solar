@@ -15,7 +15,6 @@ export type NavigationIconKey =
   | 'activity'
   | 'integrations'
   | 'ai-settings'
-  | 'sun'
   | 'logs';
 
 type SidebarRouteId = Extract<AppRouteId, AppModule['id']>;
@@ -161,17 +160,6 @@ export const navigationConfig: NavigationGroupConfig[] = [
         group: 'system',
         sortOrder: 3,
         allowedRoles: ['developer'],
-      },
-      {
-        id: 'subsidy-settings',
-        label: 'Subsidy',
-        path: '/subsidy-settings',
-        moduleId: 'subsidy-settings',
-        iconKey: 'sun',
-        group: 'system',
-        sortOrder: 3.5,
-        allowedRoles: ['developer', 'admin'],
-        accessStrategy: 'static-role-based',
       },
       {
         id: 'ai-settings',
