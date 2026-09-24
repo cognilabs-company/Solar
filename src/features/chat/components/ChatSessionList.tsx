@@ -123,19 +123,9 @@ function ChatSessionList({
     resolved: t('chatPage.states.resolved'),
   };
 
-  const prioritizedSessions: Conversation[] = [];
-  const regularSessions: Conversation[] = [];
-
-  sessions.forEach((session) => {
-    if (session.operator_needed) {
-      prioritizedSessions.push(session);
-      return;
-    }
-
-    regularSessions.push(session);
-  });
-
-  const visibleSessions = [...prioritizedSessions, ...regularSessions];
+  // Sessions arrive already ordered by the page (last message first by
+  // default); operator-needed chats keep their badge but are not pulled up.
+  const visibleSessions = sessions;
 
   if (isLoading) {
     return (
