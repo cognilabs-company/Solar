@@ -110,7 +110,7 @@ function ChartTooltipContent({
   }
 
   return (
-    <div className="min-w-[180px] rounded-xl border border-border-soft bg-surface-card px-3 py-2.5 backdrop-blur-sm">
+    <div className="min-w-[180px] rounded-lg border border-border-soft bg-surface-card px-3 py-2.5 backdrop-blur-sm">
       {!hideLabel ? (
         <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-text-secondary">
           {labelFormatter ? labelFormatter(label ?? '') : label}

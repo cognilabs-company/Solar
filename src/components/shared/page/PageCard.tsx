@@ -15,7 +15,7 @@ function PageCard({
   return (
     <div
       className={[
-        'relative rounded-[20px] p-5 shadow-md ring-1 ring-border-soft/50 transition duration-base max-[640px]:p-4 hover:shadow-lg hover:ring-primary/20',
+        'relative rounded-xl p-5 shadow-md ring-1 ring-border-soft/50 transition duration-base max-[640px]:p-4 hover:shadow-lg hover:ring-primary/20',
         allowOverflow ? 'overflow-visible' : 'overflow-hidden',
         muted
           ? 'bg-surface-subtle/75'

@@ -88,7 +88,7 @@ function ChatSessionFilters({
                 key={option.value}
                 type="button"
                 className={[
-                  'inline-flex h-[46px] min-w-0 flex-col items-center justify-center gap-0.5 rounded-xl px-1 text-[10px] font-semibold transition duration-fast',
+                  'inline-flex h-[46px] min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-[10px] font-semibold transition duration-fast',
                   'ring-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 disabled:cursor-not-allowed disabled:opacity-60',
                   isActive
                     ? 'bg-primary/14 text-text-accent ring-primary/35'
@@ -122,7 +122,7 @@ function ChatSessionFilters({
                 key={option.value}
                 type="button"
                 className={[
-                  'inline-flex min-h-[42px] items-center justify-center rounded-xl px-2 text-xs font-semibold transition duration-fast',
+                  'inline-flex min-h-[42px] items-center justify-center rounded-lg px-2 text-xs font-semibold transition duration-fast',
                   'ring-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 disabled:cursor-not-allowed disabled:opacity-60',
                   isActive
                     ? 'bg-primary/14 text-text-accent ring-primary/35'

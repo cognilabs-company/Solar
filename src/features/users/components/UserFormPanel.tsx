@@ -474,7 +474,7 @@ function UserFormPanel({
                           >
                             <span
                               className={[
-                                'mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded border',
+                                'mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border',
                                 isChecked
                                   ? 'border-primary bg-primary text-white'
                                   : 'border-border-soft bg-background-default',

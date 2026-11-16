@@ -166,7 +166,7 @@ function LoginPage() {
 
   const chargePercent = Math.round(stats.energy * 100);
   const inputShellClassName =
-    'login-input relative flex h-[52px] items-center rounded-[14px] border transition duration-fast';
+    'login-input relative flex h-[52px] items-center rounded-lg border transition duration-fast';
 
   return (
     <main className="relative min-h-screen overflow-x-hidden text-white">
@@ -179,8 +179,8 @@ function LoginPage() {
 
       <div className="pointer-events-none relative z-10 mx-auto flex min-h-screen w-full max-w-[1360px] flex-col px-5 pb-8 pt-5 sm:px-8 lg:grid lg:grid-cols-[minmax(0,1fr)_440px] lg:gap-10 lg:px-14 lg:py-10">
         <section className="flex flex-col">
-          <div className="login-rise inline-flex w-fit items-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.06] py-2 pl-2 pr-4 backdrop-blur-md">
-            <span className="login-logo inline-flex h-9 w-9 items-center justify-center rounded-xl" aria-hidden="true">
+          <div className="login-rise inline-flex w-fit items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.06] py-2 pl-2 pr-4 backdrop-blur-md">
+            <span className="login-logo inline-flex h-9 w-9 items-center justify-center rounded-lg" aria-hidden="true">
               <svg viewBox="0 0 32 32" className="login-sun-mark h-5 w-5">
                 <circle cx="16" cy="16" r="6" fill="#0b2a1a" />
                 {Array.from({ length: 8 }, (_, index) => (
@@ -259,7 +259,7 @@ function LoginPage() {
         <section className="pointer-events-auto relative w-full max-w-[440px] self-center justify-self-end max-lg:mx-auto">
           <article
             key={shakeKey}
-            className={`login-card login-card-enter relative overflow-hidden rounded-[26px] p-6 sm:p-8 ${shakeKey > 0 ? 'login-shake' : ''} ${sceneStatus === 'success' ? 'login-card--success' : ''}`}
+            className={`login-card login-card-enter relative overflow-hidden rounded-2xl p-6 sm:p-8 ${shakeKey > 0 ? 'login-shake' : ''} ${sceneStatus === 'success' ? 'login-card--success' : ''}`}
           >
             <span className="login-card__grid" aria-hidden="true" />
             <div className="relative flex items-start justify-between gap-4">
@@ -324,7 +324,7 @@ function LoginPage() {
                     aria-invalid={usernameHasError}
                     aria-describedby={usernameHasError ? 'login-username-error' : undefined}
                     placeholder={t('auth.login.usernamePlaceholder')}
-                    className="h-full w-full rounded-[14px] border-0 bg-transparent px-3.5 text-[15px] font-medium text-white placeholder:text-[14px] placeholder:text-white/30 focus:outline-none"
+                    className="h-full w-full rounded-lg border-0 bg-transparent px-3.5 text-[15px] font-medium text-white placeholder:text-[14px] placeholder:text-white/30 focus:outline-none"
                     style={{ caretColor: '#ffd34d' }}
                   />
                 </span>
@@ -353,7 +353,7 @@ function LoginPage() {
                     minLength={8}
                     aria-invalid={passwordHasError}
                     aria-describedby={passwordHasError ? 'login-password-error' : undefined}
-                    className="h-full w-full rounded-[14px] border-0 bg-transparent px-3.5 pr-12 text-[15px] font-medium text-white placeholder:text-[14px] placeholder:text-white/30 focus:outline-none"
+                    className="h-full w-full rounded-lg border-0 bg-transparent px-3.5 pr-12 text-[15px] font-medium text-white placeholder:text-[14px] placeholder:text-white/30 focus:outline-none"
                     style={{ caretColor: '#ffd34d' }}
                   />
                   <button
@@ -392,7 +392,7 @@ function LoginPage() {
               <button
                 type="submit"
                 disabled={isSubmitting || !isFormValid}
-                className="login-submit group relative mt-2 inline-flex h-[54px] items-center justify-center gap-2 overflow-hidden rounded-[14px] px-4 text-[1.02rem] font-bold transition duration-fast hover:-translate-y-px active:translate-y-0 disabled:cursor-not-allowed"
+                className="login-submit group relative mt-2 inline-flex h-[54px] items-center justify-center gap-2 overflow-hidden rounded-lg px-4 text-[1.02rem] font-bold transition duration-fast hover:-translate-y-px active:translate-y-0 disabled:cursor-not-allowed"
               >
                 <span className="login-submit__sheen" aria-hidden="true" />
                 {isSubmitting ? t('auth.login.signingIn') : t('auth.login.signIn')}

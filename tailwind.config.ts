@@ -88,11 +88,20 @@ const config: Config = {
         10: '32px',
         12: '40px',
       },
+      // One radius scale for the whole app (values live in tailwind.css :root):
+      //   sm  – tiny chips, checkboxes, kbd tags (h-4 … h-6)
+      //   md  – compact controls: icon buttons, calendar days, small buttons (h-7 … h-8)
+      //   lg  – controls & inner tiles: buttons, inputs, selects, menu items, blocks inside cards
+      //   xl  – containers: cards, panels, popovers, dropdowns, table wrappers
+      //   2xl – overlays & heroes: dialogs, modals, login card, dashboard hero
+      //   pill/full – badges, chips, avatars, switches, progress bars
       borderRadius: {
-        sm: '8px',
-        md: '12px',
-        lg: '16px',
-        xl: '20px',
+        DEFAULT: 'var(--radius-sm)',
+        sm: 'var(--radius-sm)',
+        md: 'var(--radius-md)',
+        lg: 'var(--radius-lg)',
+        xl: 'var(--radius-xl)',
+        '2xl': 'var(--radius-2xl)',
         pill: '999px',
       },
       boxShadow: {

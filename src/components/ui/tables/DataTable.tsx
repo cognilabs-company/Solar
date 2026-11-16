@@ -122,7 +122,7 @@ export function DataTable<T extends Record<string, any>>({
 						<select
 							value={pageSize}
 							onChange={e => onPageSizeChange?.(Number(e.target.value))}
-							className='rounded border border-border-soft bg-surface-card px-2 py-1 text-sm'
+							className='rounded-md border border-border-soft bg-surface-card px-2 py-1 text-sm'
 						>
 							{[10, 20, 50, 100].map(size => (
 								<option key={size} value={size}>
@@ -139,14 +139,14 @@ export function DataTable<T extends Record<string, any>>({
 						<button
 							onClick={() => onPageChange?.(currentPage - 1)}
 							disabled={currentPage === 1}
-							className='flex h-8 w-8 items-center justify-center rounded border border-border-soft text-text-secondary disabled:opacity-50'
+							className='flex h-8 w-8 items-center justify-center rounded-md border border-border-soft text-text-secondary disabled:opacity-50'
 						>
 							<FiChevronLeft />
 						</button>
 						<button
 							onClick={() => onPageChange?.(currentPage + 1)}
 							disabled={currentPage === totalPages}
-							className='flex h-8 w-8 items-center justify-center rounded border border-border-soft text-text-secondary disabled:opacity-50'
+							className='flex h-8 w-8 items-center justify-center rounded-md border border-border-soft text-text-secondary disabled:opacity-50'
 						>
 							<FiChevronRight />
 						</button>

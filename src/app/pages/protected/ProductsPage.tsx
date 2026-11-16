@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { FiEdit2, FiPackage, FiTrash2 } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -643,8 +643,11 @@ function ProductsPage() {
                 loading="lazy"
               />
             ) : (
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-surface-subtle text-xs font-semibold text-text-secondary ring-1 ring-border-soft/50">
-                -
+              <span
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface-subtle text-text-secondary ring-1 ring-border-soft/50"
+                aria-hidden="true"
+              >
+                <FiPackage className="h-4 w-4" />
               </span>
             )}
             <div className="min-w-0 grid gap-0.5">
@@ -1063,7 +1066,7 @@ function ProductsPage() {
         <PageCard>
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
             <div className="min-w-0 max-w-full overflow-x-auto">
-              <div className="inline-flex min-w-max flex-nowrap items-center gap-1 rounded-pill bg-surface-subtle/85 p-1 ring-1 ring-border-soft/50">
+              <div className="inline-flex min-w-max flex-nowrap items-center gap-1 rounded-lg bg-surface-subtle/85 p-1 ring-1 ring-border-soft/50">
               {[
                 { id: 'products' as const, label: t('products.catalogTitle') },
                 { id: 'categories' as const, label: t('products.categoriesCatalogTitle') },
@@ -1073,7 +1076,7 @@ function ProductsPage() {
                   type="button"
                   onClick={() => setCatalogView(tab.id)}
                   className={[
-                    'shrink-0 whitespace-nowrap rounded-pill px-4 py-2 text-sm font-semibold transition duration-fast',
+                    'shrink-0 whitespace-nowrap rounded-md px-4 py-2 text-sm font-semibold transition duration-fast',
                     catalogView === tab.id
                       ? 'bg-background-subtle text-text-primary shadow-sm ring-1 ring-border-soft/55'
                       : 'text-text-secondary hover:bg-background-subtle/65 hover:text-text-primary',
@@ -1124,11 +1127,7 @@ function ProductsPage() {
                   return '';
                 }
 
-                return [
-                  'bg-danger-bg/55',
-                  'shadow-[inset_0_0_0_1px_rgb(var(--color-danger)/0.16)]',
-                  'hover:bg-danger-bg/70',
-                ].join(' ');
+                return 'data-table__row--alert';
               }}
               onRowClick={(product) => setSelectedProductId(product.id)}
               emptyTitle={t('products.emptyTitle')}

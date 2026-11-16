@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react'
+import { flushSync } from 'react-dom'
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import AppIcon from '../components/shared/icons/AppIcon'
@@ -39,8 +40,14 @@ function getInitialIsDarkTheme() {
 	}
 }
 
+const THEME_WAVE_DURATION_MS = 720
+
+function prefersReducedMotion() {
+	return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+}
+
 const menuToggleClassName = [
-	'inline-flex h-10 w-10 items-center justify-center rounded-xl bg-surface-card text-text-primary transition',
+	'inline-flex h-10 w-10 items-center justify-center rounded-lg bg-surface-card text-text-primary transition',
 	'duration-fast hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:ring-offset-0',
 	'min-[960px]:hidden',
 ].join(' ')
@@ -138,6 +145,53 @@ function AppTopbar({
 		}
 	}, [location.pathname, showRouteMeta])
 
+	function handleThemeToggle(event: ReactMouseEvent<HTMLButtonElement>) {
+		const nextIsDark = !isDarkTheme
+		const root = document.documentElement
+
+		const applyTheme = () => {
+			root.dataset.theme = nextIsDark ? 'dark' : 'light'
+			flushSync(() => setIsDarkTheme(nextIsDark))
+		}
+
+		if (typeof document.startViewTransition !== 'function' || prefersReducedMotion()) {
+			applyTheme()
+			return
+		}
+
+		// The wave starts from the centre of the toggle icon (keyboard clicks have no pointer coords).
+		const rect = event.currentTarget.getBoundingClientRect()
+		const x = rect.left + rect.width / 2
+		const y = rect.top + rect.height / 2
+		const radius = Math.hypot(
+			Math.max(x, window.innerWidth - x),
+			Math.max(y, window.innerHeight - y),
+		)
+
+		root.classList.add('theme-wave')
+		const transition = document.startViewTransition(applyTheme)
+
+		transition.ready
+			.then(() => {
+				root.animate(
+					{
+						clipPath: [
+							`circle(0px at ${x}px ${y}px)`,
+							`circle(${radius}px at ${x}px ${y}px)`,
+						],
+					},
+					{
+						duration: THEME_WAVE_DURATION_MS,
+						easing: 'cubic-bezier(0.22, 0.75, 0.2, 1)',
+						pseudoElement: '::view-transition-new(root)',
+					},
+				)
+			})
+			.catch(() => undefined)
+
+		transition.finished.finally(() => root.classList.remove('theme-wave'))
+	}
+
 	function handleLogout() {
 		setIsProfileMenuOpen(false)
 		logout()
@@ -184,13 +238,14 @@ function AppTopbar({
 				<button
 					type='button'
 					className='inline-flex h-10 w-10 items-center justify-center rounded-full bg-surface-card text-text-secondary transition duration-fast hover:bg-primary/10 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25'
-					onClick={() => setIsDarkTheme(current => !current)}
+					onClick={handleThemeToggle}
 					aria-pressed={isDarkTheme}
 					aria-label={t('topbar.themeToggle')}
 				>
 					<AppIcon
+						key={isDarkTheme ? 'moon' : 'sun'}
 						name={isDarkTheme ? 'moon' : 'sun'}
-						className='h-5 w-5'
+						className='theme-toggle-icon h-5 w-5'
 						aria-hidden='true'
 					/>
 				</button>

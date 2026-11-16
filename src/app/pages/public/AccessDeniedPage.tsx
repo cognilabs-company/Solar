@@ -15,7 +15,7 @@ function AccessDeniedPage() {
 
   return (
     <main className="grid min-h-screen place-items-center bg-background-default p-6">
-      <section className="w-full max-w-[620px] rounded-2xl border border-border-soft/60 bg-surface-card p-7 shadow-sm">
+      <section className="w-full max-w-[620px] rounded-xl border border-border-soft/60 bg-surface-card p-7 shadow-sm">
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted">
           {t('auth.accessDenied.eyebrow')}
         </p>

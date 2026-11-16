@@ -177,7 +177,7 @@ function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
 			<div className='flex min-h-topbar items-center justify-between gap-3 py-3'>
 				<div className='flex items-center gap-2.5'>
 					<span
-						className='inline-flex h-10 w-10 items-center justify-center rounded-xl'
+						className='inline-flex h-10 w-10 items-center justify-center rounded-lg'
 						style={{
 							background: 'linear-gradient(140deg, #ffe07a 0%, #ffb627 55%, #f08c00 100%)',
 							boxShadow:

@@ -62,7 +62,7 @@ const labelClassName =
 	'text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted'
 
 const typeBadgeClassName =
-	'inline-flex h-5 shrink-0 items-center rounded px-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-text-primary ring-1 ring-border-soft/40 bg-surface-muted'
+	'inline-flex h-5 shrink-0 items-center rounded-sm px-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-text-primary ring-1 ring-border-soft/40 bg-surface-muted'
 
 function AttachmentTypeBadge({
 	source,

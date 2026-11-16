@@ -268,7 +268,7 @@ export function ClientRecallScheduleField({
             <PopoverTrigger asChild>
               <button
                 type="button"
-                className="inline-flex h-10 min-h-10 w-full items-center justify-between gap-3 rounded-xl border border-border-soft/60 bg-surface-card/92 px-3.5 text-left text-sm font-medium text-text-primary shadow-sm outline-none transition duration-fast hover:bg-surface-subtle/90 focus-visible:ring-2 focus-visible:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex h-10 min-h-10 w-full items-center justify-between gap-3 rounded-lg border border-border-soft/60 bg-surface-card/92 px-3.5 text-left text-sm font-medium text-text-primary shadow-sm outline-none transition duration-fast hover:bg-surface-subtle/90 focus-visible:ring-2 focus-visible:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={disabled}
                 aria-label={labels.dateLabel}
               >

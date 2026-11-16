@@ -690,7 +690,7 @@ function ProductFormPanel({
           >
             <button
               type="button"
-              className="absolute right-2 top-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full bg-surface-card/90 text-text-primary shadow-sm ring-1 ring-border-soft/60 transition duration-fast hover:bg-surface-muted"
+              className="absolute right-2 top-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-md bg-surface-card/90 text-text-primary shadow-sm ring-1 ring-border-soft/60 transition duration-fast hover:bg-surface-muted"
               onClick={closeImagePreview}
               aria-label={t('common.close')}
             >

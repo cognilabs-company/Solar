@@ -150,7 +150,7 @@ function FilterSelect({
       {isOpen ? (
         <div
           className={[
-            'absolute left-0 z-[150] w-full overflow-hidden rounded-lg bg-surface-card p-1.5 shadow-[0_22px_44px_-30px_rgba(25,28,30,0.38)] ring-1 ring-border-soft/30',
+            'absolute left-0 z-[150] w-full overflow-hidden rounded-xl bg-surface-card p-1.5 shadow-[0_22px_44px_-30px_rgba(25,28,30,0.38)] ring-1 ring-border-soft/30',
             openAbove ? 'bottom-[calc(100%+8px)]' : 'top-[calc(100%+8px)]',
           ].join(' ')}
           role="listbox"

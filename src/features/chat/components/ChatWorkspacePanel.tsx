@@ -199,7 +199,7 @@ function getAttachmentGridClassName(count: number): string {
 
 function getAttachmentTileClassName(count: number, index: number): string {
 	const baseClassName =
-		'group relative overflow-hidden rounded-xl bg-surface-card/55 ring-1 ring-border-soft/45'
+		'group relative overflow-hidden rounded-lg bg-surface-card/55 ring-1 ring-border-soft/45'
 
 	if (count === 1) {
 		return `${baseClassName} aspect-[4/3]`
@@ -459,7 +459,7 @@ function ChatWorkspacePanel({
 						{aiPaused ? (
 							<button
 								type='button'
-								className='inline-flex h-10 items-center gap-1.5 rounded-full bg-success-bg px-3 text-success transition duration-fast hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success/30 disabled:cursor-not-allowed disabled:opacity-60'
+								className='inline-flex h-10 items-center gap-1.5 rounded-lg bg-success-bg px-3 text-success transition duration-fast hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success/30 disabled:cursor-not-allowed disabled:opacity-60'
 								onClick={event => {
 									event.stopPropagation()
 									onResumeAI?.(activeSession)
@@ -476,7 +476,7 @@ function ChatWorkspacePanel({
 						) : (
 							<button
 								type='button'
-								className='inline-flex h-10 items-center gap-1.5 rounded-full bg-primary/15 px-3 text-primary transition duration-fast hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-60'
+								className='inline-flex h-10 items-center gap-1.5 rounded-lg bg-primary/15 px-3 text-primary transition duration-fast hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-60'
 								onClick={event => {
 									event.stopPropagation()
 									setIsPauseEditorOpen(current => !current)
@@ -495,7 +495,7 @@ function ChatWorkspacePanel({
 						{onRequestDeleteSession ? (
 							<button
 								type='button'
-								className='inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-danger-bg text-danger transition duration-fast hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger/35 disabled:cursor-not-allowed disabled:opacity-60'
+								className='inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-danger-bg text-danger transition duration-fast hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger/35 disabled:cursor-not-allowed disabled:opacity-60'
 								onClick={event => {
 									event.stopPropagation()
 									onRequestDeleteSession(activeSession)
@@ -535,7 +535,7 @@ function ChatWorkspacePanel({
 								<PopoverTrigger asChild>
 									<button
 										type='button'
-										className='inline-flex h-10 w-full items-center justify-between gap-2 rounded-pill border border-border-soft/70 bg-gradient-to-b from-surface-card to-surface-subtle/80 px-3.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-text-secondary shadow-[0_15px_26px_-22px_rgba(16,185,129,0.55)] transition duration-fast hover:border-success/45 hover:text-text-primary'
+										className='inline-flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-border-soft/70 bg-gradient-to-b from-surface-card to-surface-subtle/80 px-3.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-text-secondary shadow-[0_15px_26px_-22px_rgba(16,185,129,0.55)] transition duration-fast hover:border-success/45 hover:text-text-primary'
 										aria-label={labels.selectDate}
 									>
 										<span className='inline-flex items-center gap-2 truncate'>
@@ -581,7 +581,7 @@ function ChatWorkspacePanel({
 								</PopoverContent>
 							</Popover>
 
-							<div className='grid grid-cols-2 gap-2 rounded-pill bg-surface-subtle/70 p-1 ring-1 ring-border-soft/45'>
+							<div className='grid grid-cols-2 gap-2 rounded-lg bg-surface-subtle/70 p-1 ring-1 ring-border-soft/45'>
 								<FilterSelect
 									value={pauseTimeParts.hour}
 									options={PAUSE_HOUR_OPTIONS}
@@ -680,7 +680,7 @@ function ChatWorkspacePanel({
 									outgoing ? 'ml-auto' : '',
 								].join(' ')
 								const attachmentCardClassName = [
-									'mt-2 w-fit max-w-full rounded-2xl p-2.5 ring-1',
+									'mt-2 w-fit max-w-full rounded-lg p-2.5 ring-1',
 									outgoing
 										? 'ml-auto bg-white/10 ring-white/25'
 										: 'bg-background-subtle/90 ring-border-soft/55',
@@ -695,14 +695,14 @@ function ChatWorkspacePanel({
 										].join(' ')}
 									>
 										{!outgoing ? (
-											<span className='inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-surface-card/92 text-text-secondary ring-1 ring-border-soft/55 dark:bg-surface-subtle/92'>
+											<span className='inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-card/92 text-text-secondary ring-1 ring-border-soft/55 dark:bg-surface-subtle/92'>
 												<FiUser className='h-4 w-4' />
 											</span>
 										) : null}
 
 										<article
 											className={[
-												'max-w-[82%] rounded-2xl px-4 py-3 shadow-sm ring-1',
+												'max-w-[82%] rounded-xl px-4 py-3 shadow-sm ring-1',
 												outgoing
 													? 'bg-[linear-gradient(160deg,rgb(16_185_129),rgb(13_148_136))] text-white ring-success/35 shadow-[0_20px_40px_-28px_rgba(16,185,129,0.85)]'
 													: 'bg-surface-card/95 text-text-primary ring-border-soft/60 dark:bg-surface-subtle/92',
@@ -790,13 +790,13 @@ function ChatWorkspacePanel({
 						value={draftMessage}
 						onChange={event => setDraftMessage(event.target.value)}
 						onKeyDown={handleComposerKeyDown}
-						className='min-h-[56px] max-h-[132px] w-full flex-1 resize-y rounded-xl border-0 bg-surface-card/85 px-3 py-3 text-sm text-text-primary outline-none transition duration-fast placeholder:text-text-muted focus-visible:ring-2 focus-visible:ring-primary/35 dark:bg-background-subtle/85'
+						className='min-h-[56px] max-h-[132px] w-full flex-1 resize-y rounded-lg border-0 bg-surface-card/85 px-3 py-3 text-sm text-text-primary outline-none transition duration-fast placeholder:text-text-muted focus-visible:ring-2 focus-visible:ring-primary/35 dark:bg-background-subtle/85'
 						placeholder={labels.messagePlaceholder}
 						disabled={isSending}
 					/>
 					<button
 						type='button'
-						className='inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition duration-fast hover:bg-primary-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 disabled:cursor-not-allowed disabled:opacity-60'
+						className='inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground transition duration-fast hover:bg-primary-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 disabled:cursor-not-allowed disabled:opacity-60'
 						onClick={() => {
 							void submitMessage()
 						}}

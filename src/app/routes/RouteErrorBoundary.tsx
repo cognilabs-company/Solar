@@ -26,7 +26,7 @@ function RouteErrorBoundary() {
 
   return (
     <main className="grid min-h-screen place-items-center bg-background-default p-6">
-      <section className="w-full max-w-[540px] rounded-2xl bg-surface-card p-6 shadow-sm ring-1 ring-border-soft/50">
+      <section className="w-full max-w-[540px] rounded-xl bg-surface-card p-6 shadow-sm ring-1 ring-border-soft/50">
         <p className="m-0 text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">
           Xatolik
         </p>

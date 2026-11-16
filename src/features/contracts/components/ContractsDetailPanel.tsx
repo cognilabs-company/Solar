@@ -256,7 +256,7 @@ function ContractStatusTimeline({
 		: "Shartnoma bekor qilingan. Statuslar bo'yicha jarayon to'xtatilgan."
 
 	return (
-		<div className='rounded-2xl bg-gradient-to-br from-surface-subtle/85 via-surface-card to-surface-subtle/45 p-4 ring-1 ring-border-soft/45'>
+		<div className='rounded-xl bg-gradient-to-br from-surface-subtle/85 via-surface-card to-surface-subtle/45 p-4 ring-1 ring-border-soft/45'>
 			<div className='mb-3 flex flex-wrap items-center justify-between gap-2'>
 				<div className='min-w-0'>
 					<p className={labelClassName}>{title}</p>
@@ -982,7 +982,7 @@ export function ContractsDetailPanel({
 												className='h-4 w-4 shrink-0 text-text-muted'
 												aria-hidden='true'
 											/>
-											<span className='inline-flex h-5 shrink-0 items-center rounded bg-surface-muted px-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-text-primary ring-1 ring-border-soft/40'>
+											<span className='inline-flex h-5 shrink-0 items-center rounded-sm bg-surface-muted px-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-text-primary ring-1 ring-border-soft/40'>
 												{getAttachmentTypeLabel(item.url)}
 											</span>
 											<p className={`min-w-0 truncate ${valueClassName}`}>
@@ -1081,7 +1081,7 @@ export function ContractsDetailPanel({
 		<div className='mt-1 flex flex-wrap items-center gap-2'>
 			<button
 				type='button'
-				className='inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-info-bg px-4 text-sm font-semibold text-info shadow-sm ring-1 ring-info/25 transition duration-fast hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-info/30 disabled:cursor-not-allowed disabled:opacity-60'
+				className='inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-info-bg px-4 text-sm font-semibold text-info shadow-sm ring-1 ring-info/25 transition duration-fast hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-info/30 disabled:cursor-not-allowed disabled:opacity-60'
 				onClick={() => onRecalculate?.(contract)}
 				disabled={isRecalculating}
 			>
@@ -1090,7 +1090,7 @@ export function ContractsDetailPanel({
 			</button>
 			<button
 				type='button'
-				className='inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition duration-fast hover:bg-primary-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35'
+				className='inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition duration-fast hover:bg-primary-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35'
 				onClick={() => onEdit?.(contract)}
 			>
 				<FiEdit2 className='h-4 w-4' />
@@ -1098,7 +1098,7 @@ export function ContractsDetailPanel({
 			</button>
 			<button
 				type='button'
-				className='inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-surface-card px-4 text-sm font-semibold text-danger shadow-sm ring-1 ring-danger/25 transition duration-fast hover:bg-danger/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger/25'
+				className='inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-surface-card px-4 text-sm font-semibold text-danger shadow-sm ring-1 ring-danger/25 transition duration-fast hover:bg-danger/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger/25'
 				onClick={() => onRequestDelete?.(contract)}
 			>
 				<FiTrash2 className='h-4 w-4' />

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import { ru, uz } from 'date-fns/locale'
 import { type DateRange } from 'react-day-picker'
 import {
@@ -10,6 +11,8 @@ import {
 } from '../../../components/shared/data'
 import AppIcon, { type AppIconName } from '../../../components/shared/icons/AppIcon'
 import { PageLayout } from '../../../components/shared/page'
+import { useAuth } from '../../../auth'
+import { routePaths, type AppRouteId } from '../../../config/routes'
 import { Calendar } from '../../../components/ui/calendar'
 import {
 	ChartContainer,
@@ -104,7 +107,7 @@ const STATUS_COLORS_FALLBACK = [
 ]
 
 const dashCardClassName =
-	'app-rise relative min-w-0 overflow-hidden rounded-[20px] bg-surface-card p-5 shadow-md ring-1 ring-border-soft/50 transition duration-base hover:shadow-lg hover:ring-primary/20 max-[640px]:p-4'
+	'app-rise relative min-w-0 overflow-hidden rounded-xl bg-surface-card p-5 shadow-md ring-1 ring-border-soft/50 transition duration-base hover:shadow-lg hover:ring-primary/20 max-[640px]:p-4'
 
 type MetricTone = 'green' | 'sun' | 'sky' | 'violet' | 'teal'
 
@@ -125,6 +128,7 @@ interface MetricCardData {
 	format: (value: number) => string
 	series?: number[]
 	hint?: string
+	routeId: AppRouteId
 }
 
 function DashSectionHeading({
@@ -143,7 +147,7 @@ function DashSectionHeading({
 			<div className='flex min-w-0 items-start gap-3'>
 				<span
 					aria-hidden='true'
-					className='mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-sun/15 text-text-accent ring-1 ring-primary/15'
+					className='mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/15 to-sun/15 text-text-accent ring-1 ring-primary/15'
 				>
 					<AppIcon name={icon} className='h-4 w-4' />
 				</span>
@@ -165,20 +169,20 @@ function DashboardSkeleton() {
 	return (
 		<PageLayout>
 			<section className='grid gap-4 min-[768px]:gap-5' aria-busy='true'>
-				<div className='app-skeleton h-[188px] rounded-[24px]' />
+				<div className='app-skeleton h-[188px] rounded-2xl' />
 				<div className='grid grid-cols-2 gap-3 xl:grid-cols-5'>
 					{Array.from({ length: 5 }, (_, index) => (
 						<div
 							key={index}
-							className='rounded-[20px] bg-surface-card p-5 shadow-md ring-1 ring-border-soft/50'
+							className='rounded-xl bg-surface-card p-5 shadow-md ring-1 ring-border-soft/50'
 						>
-							<div className='app-skeleton h-9 w-9 rounded-xl' />
+							<div className='app-skeleton h-9 w-9 rounded-lg' />
 							<div className='app-skeleton mt-4 h-3 w-24 rounded-full' />
 							<div className='app-skeleton mt-3 h-7 w-20 rounded-lg' />
 						</div>
 					))}
 				</div>
-				<div className='rounded-[20px] bg-surface-card p-5 shadow-md ring-1 ring-border-soft/50'>
+				<div className='rounded-xl bg-surface-card p-5 shadow-md ring-1 ring-border-soft/50'>
 					<div className='app-skeleton h-4 w-40 rounded-full' />
 					<div className='app-skeleton mt-5 h-[250px] rounded-xl' />
 				</div>
@@ -431,7 +435,7 @@ function DashboardIntervalDropdown({
 				type='button'
 				onClick={() => setIsOpen(current => !current)}
 				className={[
-					'group inline-flex h-8 w-full min-w-0 items-center justify-between gap-2 rounded-pill border px-3.5 text-[11px] font-semibold uppercase tracking-[0.1em] transition duration-fast min-[480px]:w-auto min-[480px]:min-w-[130px]',
+					'group inline-flex h-8 w-full min-w-0 items-center justify-between gap-2 rounded-lg border px-3.5 text-[11px] font-semibold uppercase tracking-[0.1em] transition duration-fast min-[480px]:w-auto min-[480px]:min-w-[130px]',
 					'bg-gradient-to-b from-surface-card to-surface-subtle/80 shadow-[0_15px_26px_-22px_rgba(22,133,62,0.85)]',
 					isOpen
 						? 'border-primary/60 text-text-primary ring-2 ring-primary/20'
@@ -500,6 +504,7 @@ function DashboardIntervalDropdown({
 
 function DashboardPage() {
 	const { t, i18n } = useTranslation()
+	const { canAccessRoute } = useAuth()
 	const locale = i18n.language === 'ru' ? 'ru-RU' : 'uz-UZ'
 	const calendarLocale = i18n.language === 'ru' ? ru : uz
 	const publicTx = {
@@ -638,10 +643,10 @@ function DashboardPage() {
 	if (hasError || !overview) {
 		return (
 			<PageLayout>
-				<section className='app-rise rounded-[20px] bg-surface-card p-7 shadow-md ring-1 ring-danger/25'>
+				<section className='app-rise rounded-xl bg-surface-card p-7 shadow-md ring-1 ring-danger/25'>
 					<span
 						aria-hidden='true'
-						className='mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-danger-bg text-danger'
+						className='mb-4 inline-flex h-11 w-11 items-center justify-center rounded-lg bg-danger-bg text-danger'
 					>
 						<AppIcon name='activity' className='h-5 w-5' />
 					</span>
@@ -793,6 +798,7 @@ function DashboardPage() {
 	const metricCards: MetricCardData[] = [
 		{
 			key: 'clients',
+			routeId: 'clients',
 			label: t('routes.clients.title', { defaultValue: 'Clients' }),
 			icon: 'clients',
 			tone: 'green',
@@ -803,6 +809,7 @@ function DashboardPage() {
 		},
 		{
 			key: 'chats',
+			routeId: 'chats',
 			label: t('routes.chat.title', { defaultValue: 'Chats' }),
 			icon: 'chat',
 			tone: 'sky',
@@ -813,6 +820,7 @@ function DashboardPage() {
 		},
 		{
 			key: 'contracts',
+			routeId: 'contracts',
 			label: t('routes.contracts.title', { defaultValue: 'Contracts' }),
 			icon: 'contracts',
 			tone: 'sun',
@@ -823,6 +831,7 @@ function DashboardPage() {
 		},
 		{
 			key: 'products',
+			routeId: 'products',
 			label: t('routes.products.title', { defaultValue: 'Products' }),
 			icon: 'products',
 			tone: 'teal',
@@ -831,6 +840,7 @@ function DashboardPage() {
 		},
 		{
 			key: 'notifications',
+			routeId: 'notifications',
 			label: t('routes.notifications.title', { defaultValue: 'Notifications' }),
 			icon: 'notifications',
 			tone: 'violet',
@@ -909,7 +919,7 @@ function DashboardPage() {
 	return (
 		<PageLayout>
 			<section className='grid gap-4 min-[768px]:gap-5'>
-				<header className='app-rise relative isolate overflow-hidden rounded-[24px] p-5 text-white shadow-lg min-[640px]:p-7'
+				<header className='app-rise relative isolate overflow-hidden rounded-2xl p-5 text-white shadow-lg min-[640px]:p-7'
 					style={{
 						background:
 							'linear-gradient(118deg, #0A3A1E 0%, #0E542A 40%, #16853E 100%)',
@@ -999,7 +1009,7 @@ function DashboardPage() {
 								<PopoverTrigger asChild>
 									<button
 										type='button'
-										className='inline-flex h-8 w-full items-center justify-between gap-2 rounded-pill border border-border-soft/70 bg-gradient-to-b from-surface-card to-surface-subtle/80 px-3.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-text-secondary shadow-[0_15px_26px_-22px_rgba(22,133,62,0.6)] transition duration-fast hover:border-primary/45 hover:text-text-primary min-[480px]:w-auto min-[480px]:min-w-[248px]'
+										className='inline-flex h-8 w-full items-center justify-between gap-2 rounded-lg border border-border-soft/70 bg-gradient-to-b from-surface-card to-surface-subtle/80 px-3.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-text-secondary shadow-[0_15px_26px_-22px_rgba(22,133,62,0.6)] transition duration-fast hover:border-primary/45 hover:text-text-primary min-[480px]:w-auto min-[480px]:min-w-[248px]'
 										aria-label={t('dashboard.filters.customRange')}
 									>
 										<span className='inline-flex items-center gap-2 truncate'>
@@ -1105,12 +1115,13 @@ function DashboardPage() {
 				<section className='grid grid-cols-2 gap-3 xl:grid-cols-5'>
 					{metricCards.map((card, index) => {
 						const tone = METRIC_TONES[card.tone]
-						return (
-							<article
-								key={card.key}
-								className={`${dashCardClassName} group hover:-translate-y-0.5 ${index === metricCards.length - 1 ? 'max-xl:col-span-2' : ''}`}
-								style={{ ['--rise-index' as string]: index + 1 }}
-							>
+						const href = canAccessRoute(card.routeId)
+							? routePaths[card.routeId as keyof typeof routePaths]
+							: undefined
+						const cardClassName = `${dashCardClassName} group hover:-translate-y-0.5 ${index === metricCards.length - 1 ? 'max-xl:col-span-2' : ''}`
+						const cardStyle = { ['--rise-index' as string]: index + 1 }
+						const body = (
+							<>
 								<span
 									aria-hidden='true'
 									className='absolute inset-x-0 top-0 h-[3px] opacity-80'
@@ -1121,7 +1132,7 @@ function DashboardPage() {
 								<div className='flex h-10 items-center justify-between gap-3'>
 									<span
 										aria-hidden='true'
-										className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition duration-base group-hover:scale-105 ${tone.chip}`}
+										className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition duration-base group-hover:scale-105 ${tone.chip}`}
 									>
 										<AppIcon name={card.icon} className='h-[18px] w-[18px]' />
 									</span>
@@ -1150,6 +1161,21 @@ function DashboardPage() {
 										{card.hint}
 									</p>
 								) : null}
+							</>
+						)
+						return href ? (
+							<Link
+								key={card.key}
+								to={href}
+								aria-label={card.label}
+								className={`${cardClassName} block cursor-pointer text-inherit no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
+								style={cardStyle}
+							>
+								{body}
+							</Link>
+						) : (
+							<article key={card.key} className={cardClassName} style={cardStyle}>
+								{body}
 							</article>
 						)
 					})}
