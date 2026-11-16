@@ -378,6 +378,12 @@
         "deye": "Deye",
         "solax": "Solax"
       }
+    },
+    "kpi": {
+      "inRange": "+{{value}} за выбранный период"
+    },
+    "hero": {
+      "collectedShare": "Собрано {{value}} от общей суммы"
     }
   },
   "leads": {

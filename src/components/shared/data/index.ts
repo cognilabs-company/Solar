@@ -11,3 +11,5 @@ export { default as StatusSelect } from './StatusSelect';
 export type { StatusSelectOption } from './StatusSelect';
 export { default as Switch } from './Switch';
 export { getStatusBadgeTone } from './StatusBadge';
+export { default as AnimatedNumber } from './AnimatedNumber';
+export { default as Sparkline } from './Sparkline';

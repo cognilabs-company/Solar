@@ -28,6 +28,8 @@ interface DataTableProps<T> {
     ariaLabel?: string;
     onReorder: (fromIndex: number, toIndex: number) => void;
   };
+  /** Drop the wide minimum width — for narrow tables with only a few columns. */
+  compact?: boolean;
 }
 
 const TABLE_SHELL_CLASS_NAME = [
@@ -112,7 +114,11 @@ function DataTable<T>({
   onRowClick,
   getRowClassName,
   rowReorder,
+  compact = false,
 }: DataTableProps<T>) {
+  const tableClassName = compact
+    ? TABLE_CLASS_NAME.replace('min-w-[620px]', 'min-w-0').replace('min-[768px]:min-w-[720px]', '')
+    : TABLE_CLASS_NAME;
   const { t } = useTranslation();
   const tableRef = useRef<HTMLTableElement | null>(null);
   const resolvedEmptyTitle = emptyTitle ?? t('shared.table.emptyTitle');
@@ -283,7 +289,7 @@ function DataTable<T>({
           aria-hidden="true"
         >
           <table
-            className={TABLE_CLASS_NAME}
+            className={tableClassName}
             style={{
               minWidth: 0,
               width: '100%',
@@ -327,7 +333,7 @@ function DataTable<T>({
           </table>
         </div>
       ) : null}
-      <table ref={tableRef} className={TABLE_CLASS_NAME}>
+      <table ref={tableRef} className={tableClassName}>
         <thead>
           <tr>
             {isRowReorderEnabled ? (

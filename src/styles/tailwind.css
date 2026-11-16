@@ -7,11 +7,16 @@
 @layer base {
 	:root {
 		/* Primary - Forest Green (Green NRG Brand) */
-		--color-primary: 34 139 34; /* Forest Green */
+		--color-primary: 22 133 62; /* Energy Green (Green NRG Brand) */
 		--color-primary-foreground: 255 255 255;
-		--color-primary-accent: 60 179 113; /* Medium Sea Green */
-		--color-primary-soft: 144 238 144; /* Light Green */
-		--color-primary-strong: 25 100 25; /* Dark Green */
+		--color-primary-accent: 46 170 88; /* Bright Energy Green */
+		--color-primary-soft: 167 236 186; /* Light Green */
+		--color-primary-strong: 14 84 42; /* Deep Green */
+
+		/* Sun - secondary brand accent */
+		--color-sun: 245 165 36;
+		--color-sun-soft: 255 224 122;
+		--color-sun-strong: 222 118 0;
 
 		--color-background-default: 248 250 252; /* Slate 50 */
 		--color-background-subtle: 241 245 249; /* Slate 100 */
@@ -28,7 +33,7 @@
 		--color-text-primary: 15 23 42; /* Slate 900 */
 		--color-text-secondary: 71 85 105; /* Slate 600 */
 		--color-text-muted: 148 163 184; /* Slate 400 */
-		--color-text-accent: 34 139 34; /* Primary Green */
+		--color-text-accent: 22 133 62; /* Primary Green */
 		--color-text-inverse: 248 250 252;
 
 		--color-border-soft: 226 232 240; /* Slate 200 */
@@ -36,13 +41,13 @@
 		--color-border-accent: 144 238 144; /* Light Green */
 		--color-border-inverse: 30 41 59; /* Slate 800 */
 
-		--color-success: 34 139 34; /* Green */
+		--color-success: 22 133 62; /* Green */
 		--color-success-bg: 209 250 229;
 		--color-warning: 217 119 6; /* Amber */
 		--color-warning-bg: 254 243 199;
 		--color-danger: 239 68 68; /* Red */
 		--color-danger-bg: 254 226 226;
-		--color-info: 34 139 34; /* Green */
+		--color-info: 22 133 62; /* Green */
 		--color-info-bg: 220 252 231;
 
 		--color-neutral: 100 116 139;
@@ -66,6 +71,10 @@
 		--color-primary-accent: 144 238 144; /* Light Green */
 		--color-primary-soft: 34 80 34; /* Dark Green */
 		--color-primary-strong: 34 120 34; /* Medium Dark Green */
+
+		--color-sun: 251 191 36;
+		--color-sun-soft: 120 80 10;
+		--color-sun-strong: 253 213 98;
 
 		--color-background-default: 15 23 42; /* Slate 900 */
 		--color-background-subtle: 11 15 25; /* Deeper Slate */
@@ -128,11 +137,9 @@
 		overflow-x: hidden;
 		color: rgb(var(--color-text-primary));
 		background-color: rgb(var(--color-background-default));
-		background-image: radial-gradient(
-			circle at 0% 0%,
-			rgb(var(--color-primary) / 0.05),
-			transparent 40%
-		);
+		background-image:
+			radial-gradient(circle at 0% 0%, rgb(var(--color-primary) / 0.06), transparent 40%),
+			radial-gradient(circle at 100% 0%, rgb(var(--color-sun) / 0.06), transparent 36%);
 		transition:
 			background-color 180ms ease,
 			color 180ms ease;
@@ -317,6 +324,130 @@
 		.login-power-bar,
 		.login-sun-mark {
 			animation: none;
+		}
+	}
+}
+
+/* App shell — dashboard, sidebar and page motion */
+@layer components {
+	.app-page-enter {
+		animation: app-page-enter 420ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+	}
+
+	.app-rise {
+		animation: app-rise 560ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+		animation-delay: calc(var(--rise-index, 0) * 70ms);
+	}
+
+	.app-skeleton {
+		position: relative;
+		overflow: hidden;
+		background: rgb(var(--color-border-soft) / 0.45);
+	}
+
+	.app-skeleton::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		transform: translateX(-100%);
+		background: linear-gradient(
+			90deg,
+			transparent,
+			rgb(255 255 255 / 0.55),
+			transparent
+		);
+		animation: app-skeleton-sweep 1.4s ease-in-out infinite;
+	}
+
+	html[data-theme='dark'] .app-skeleton::after {
+		background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.06), transparent);
+	}
+
+	.app-sun-spin {
+		animation: login-sun-spin 24s linear infinite;
+		transform-origin: center;
+	}
+
+	.dash-hero-ray {
+		animation: dash-hero-ray 9s ease-in-out infinite;
+		transform-origin: 100% 0%;
+	}
+
+	.dash-sparkline-path {
+		stroke-dasharray: var(--path-length, 400);
+		stroke-dashoffset: var(--path-length, 400);
+		animation: dash-sparkline-draw 1100ms cubic-bezier(0.3, 0.7, 0.2, 1) 200ms forwards;
+	}
+
+	.sidebar-indicator {
+		transition:
+			transform 380ms cubic-bezier(0.34, 1.36, 0.5, 1),
+			height 380ms cubic-bezier(0.34, 1.36, 0.5, 1),
+			opacity 200ms ease;
+	}
+
+	@keyframes app-page-enter {
+		from {
+			opacity: 0;
+			transform: translateY(10px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	@keyframes app-rise {
+		from {
+			opacity: 0;
+			transform: translateY(14px) scale(0.99);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	@keyframes app-skeleton-sweep {
+		to {
+			transform: translateX(100%);
+		}
+	}
+
+	@keyframes dash-hero-ray {
+		0%,
+		100% {
+			opacity: 0.55;
+			transform: rotate(0deg);
+		}
+		50% {
+			opacity: 0.9;
+			transform: rotate(4deg);
+		}
+	}
+
+	@keyframes dash-sparkline-draw {
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.app-page-enter,
+		.app-rise,
+		.app-skeleton::after,
+		.app-sun-spin,
+		.dash-hero-ray {
+			animation: none;
+		}
+
+		.dash-sparkline-path {
+			animation: none;
+			stroke-dashoffset: 0;
+		}
+
+		.sidebar-indicator {
+			transition: none;
 		}
 	}
 }

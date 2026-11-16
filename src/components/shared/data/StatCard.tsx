@@ -14,7 +14,7 @@ interface StatCardProps {
 
 const CARD_CLASS_NAME = [
   'stat-card relative flex min-h-[148px] items-start justify-between gap-3 overflow-hidden rounded-[20px]',
-  'bg-surface-card p-5 shadow-sm ring-1 ring-border-soft/25 backdrop-blur-[12px] max-[640px]:p-4',
+  'bg-surface-card p-5 shadow-md ring-1 ring-border-soft/50 backdrop-blur-[12px] transition duration-base hover:-translate-y-0.5 hover:shadow-lg max-[640px]:p-4',
 ].join(' ');
 
 const TREND_CLASS_NAMES: Record<StatTrendDirection, string> = {
@@ -26,6 +26,10 @@ const TREND_CLASS_NAMES: Record<StatTrendDirection, string> = {
 function StatCard({ title, value, subtitle, trend }: StatCardProps) {
   return (
     <article className={CARD_CLASS_NAME}>
+      <span
+        aria-hidden="true"
+        className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-primary via-primary-accent to-sun opacity-80"
+      />
       <div className="grid gap-2.5">
         <p className="m-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted">
           {title}

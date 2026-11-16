@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { navigationConfig } from '../config/navigation'
 import AppIcon from '../components/shared/icons/AppIcon'
@@ -21,7 +21,7 @@ const groupLabelClassName =
 	'mb-2 mt-1 px-2 text-[10px] font-bold uppercase tracking-[0.16em] text-text-muted/90'
 
 const navLinkBaseClassName = [
-	'group block rounded-xl px-3 py-2.5 text-text-secondary no-underline transition duration-fast',
+	'group relative z-[1] block rounded-xl px-3 py-2.5 text-text-secondary no-underline transition duration-fast',
 	'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:ring-offset-0',
 ].join(' ')
 
@@ -29,9 +29,14 @@ const navLinkInactiveClassName = [
 	'hover:bg-surface-card/85 hover:text-text-primary',
 ].join(' ')
 
-const navLinkActiveClassName = [
-	'bg-primary/10 text-text-accent shadow-sm ring-1 ring-primary/20',
-].join(' ')
+// The active background is painted by the sliding indicator behind the links.
+const navLinkActiveClassName = ['text-text-accent'].join(' ')
+
+interface IndicatorRect {
+	top: number
+	height: number
+	visible: boolean
+}
 
 function resolveTranslationId(id: string): string {
 	if (id === 'chats') {
@@ -47,6 +52,13 @@ function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
 	const { canAccessRoute } = useAuth()
 	const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0)
 	const canViewNotifications = canAccessRoute('notifications')
+	const location = useLocation()
+	const navScrollRef = useRef<HTMLDivElement | null>(null)
+	const [indicator, setIndicator] = useState<IndicatorRect>({
+		top: 0,
+		height: 0,
+		visible: false,
+	})
 
 	useEffect(() => {
 		let isActive = true
@@ -120,6 +132,36 @@ function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
 		[canAccessRoute],
 	)
 
+	useLayoutEffect(() => {
+		const container = navScrollRef.current
+		if (!container) {
+			return
+		}
+
+		function measure() {
+			if (!container) {
+				return
+			}
+			const active = container.querySelector<HTMLElement>('a[aria-current="page"]')
+			if (!active) {
+				setIndicator(current => ({ ...current, visible: false }))
+				return
+			}
+			const containerRect = container.getBoundingClientRect()
+			const activeRect = active.getBoundingClientRect()
+			setIndicator({
+				top: activeRect.top - containerRect.top + container.scrollTop,
+				height: activeRect.height,
+				visible: true,
+			})
+		}
+
+		measure()
+		const observer = new ResizeObserver(measure)
+		observer.observe(container)
+		return () => observer.disconnect()
+	}, [location.pathname, visibleNavigationGroups])
+
 	return (
 		<aside
 			className={[
@@ -131,12 +173,30 @@ function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
 		>
 			<div className='flex min-h-topbar items-center justify-between gap-3 py-3'>
 				<div className='flex items-center gap-2.5'>
-					<span className='inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm'>
-						<AppIcon
-							name='dashboard'
-							className='h-[17px] w-[17px]'
-							aria-hidden='true'
-						/>
+					<span
+						className='inline-flex h-10 w-10 items-center justify-center rounded-xl'
+						style={{
+							background: 'linear-gradient(140deg, #ffe07a 0%, #ffb627 55%, #f08c00 100%)',
+							boxShadow:
+								'0 12px 22px -12px rgba(240, 140, 0, 0.85), inset 0 1px 0 rgba(255,255,255,0.6)',
+						}}
+						aria-hidden='true'
+					>
+						<svg viewBox='0 0 32 32' className='app-sun-spin h-6 w-6'>
+							<circle cx='16' cy='16' r='6' fill='#ffffff' />
+							{Array.from({ length: 8 }, (_, index) => (
+								<rect
+									key={index}
+									x='15'
+									y='2.5'
+									width='2'
+									height='5'
+									rx='1'
+									fill='#ffffff'
+									transform={`rotate(${index * 45} 16 16)`}
+								/>
+							))}
+						</svg>
 					</span>
 					<div>
 						<h1 className='m-0 font-display text-[1.36rem] font-extrabold leading-none tracking-[-0.03em]'>
@@ -157,7 +217,18 @@ function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
 				</button>
 			</div>
 
-			<div className='flex-1 overflow-y-auto pr-1 pt-4'>
+			<div ref={navScrollRef} className='relative flex-1 overflow-y-auto pr-1 pt-4'>
+				<span
+					aria-hidden='true'
+					className='sidebar-indicator pointer-events-none absolute left-0 right-1 top-0 rounded-xl bg-gradient-to-r from-primary/14 via-primary/8 to-sun/10 shadow-sm ring-1 ring-primary/20'
+					style={{
+						transform: `translateY(${indicator.top}px)`,
+						height: indicator.height,
+						opacity: indicator.visible ? 1 : 0,
+					}}
+				>
+					<span className='absolute left-0 top-1/2 h-[60%] w-[3px] -translate-y-1/2 rounded-full bg-gradient-to-b from-primary to-sun' />
+				</span>
 				{visibleNavigationGroups.map(group => (
 					<section key={group.id} className='mt-0 first:mt-0 [&+&]:mt-5'>
 						<p className={groupLabelClassName}>

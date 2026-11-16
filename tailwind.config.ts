@@ -50,6 +50,11 @@ const config: Config = {
           accent: variableColor('--color-border-accent'),
           inverse: variableColor('--color-border-inverse'),
         },
+        sun: {
+          DEFAULT: variableColor('--color-sun'),
+          soft: variableColor('--color-sun-soft'),
+          strong: variableColor('--color-sun-strong'),
+        },
         success: {
           DEFAULT: variableColor('--color-success'),
           bg: variableColor('--color-success-bg'),
@@ -92,7 +97,9 @@ const config: Config = {
       },
       boxShadow: {
         sm: '0 0 0 1px rgba(25, 28, 30, 0.06)',
-        md: '0 8px 24px rgba(25, 28, 30, 0.06)',
+        md: '0 12px 32px -12px rgba(15, 40, 25, 0.16)',
+        lg: '0 24px 48px -24px rgba(15, 40, 25, 0.28)',
+        glow: '0 18px 40px -18px rgb(var(--color-primary) / 0.55)',
       },
       maxWidth: {
         page: '1600px',

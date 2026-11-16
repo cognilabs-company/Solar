@@ -1,12 +1,14 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ru, uz } from 'date-fns/locale'
 import { type DateRange } from 'react-day-picker'
 import {
+	AnimatedNumber,
 	DataTable,
+	Sparkline,
 	type DataTableColumn,
 } from '../../../components/shared/data'
-import AppIcon from '../../../components/shared/icons/AppIcon'
+import AppIcon, { type AppIconName } from '../../../components/shared/icons/AppIcon'
 import { PageLayout } from '../../../components/shared/page'
 import { Calendar } from '../../../components/ui/calendar'
 import {
@@ -36,10 +38,10 @@ import type {
 	DashboardTopProduct,
 } from '../../../services'
 import {
+	Area,
+	AreaChart,
 	CartesianGrid,
 	Cell,
-	Line,
-	LineChart,
 	Pie,
 	PieChart,
 	XAxis,
@@ -54,40 +56,136 @@ interface PieSlice extends DashboardBreakdownItem {
 const SOURCE_COLORS: Record<string, string> = {
 	telegram: '#2AABEE',
 	instagram: '#E1306C',
-	manual: '#F59E0B',
+	manual: '#F5A524',
 }
 
-const SOURCE_COLORS_FALLBACK = ['#0EA5E9', '#E1306C', '#10B981', '#F59E0B']
-const STATUS_COLORS: Record<string, string> = {
-	new: '#3B82F6',
-	contacted: '#8B5CF6',
-	qualified: '#10B981',
-	negotiating: '#F59E0B',
-	converted: '#059669',
-	lost: '#EF4444',
-}
+/**
+ * Green NRG chart palette: energy greens and sun ambers first, with sky,
+ * teal and violet as neutral contrast hues. Red is reserved for "canceled".
+ */
+const BRAND_CHART = {
+	green: '#16853E',
+	leaf: '#5BBF62',
+	sun: '#F5A524',
+	amber: '#E07A10',
+	sky: '#2E8BD8',
+	teal: '#14A3A1',
+	violet: '#7C5CD6',
+	red: '#E5484D',
+} as const
+
+const SOURCE_COLORS_FALLBACK = [
+	BRAND_CHART.teal,
+	BRAND_CHART.violet,
+	BRAND_CHART.leaf,
+	BRAND_CHART.sun,
+]
 
 const CONTRACT_STATUS_COLORS: Record<string, string> = {
-	draft: '#3B82F6',
-	audit_pending: '#F59E0B',
-	audit_paid: '#10B981',
-	moderation: '#8B5CF6',
-	contract_ready: '#059669',
-	payment_pending: '#F97316',
-	paid: '#22C55E',
-	in_lot: '#0EA5E9',
-	on_the_way: '#06B6D4',
-	completed: '#16A34A',
-	canceled: '#EF4444',
+	draft: BRAND_CHART.sky,
+	audit_pending: BRAND_CHART.sun,
+	audit_paid: BRAND_CHART.leaf,
+	moderation: BRAND_CHART.violet,
+	contract_ready: BRAND_CHART.teal,
+	payment_pending: BRAND_CHART.amber,
+	paid: BRAND_CHART.green,
+	in_lot: BRAND_CHART.sky,
+	on_the_way: BRAND_CHART.teal,
+	completed: BRAND_CHART.green,
+	canceled: BRAND_CHART.red,
 }
 const STATUS_COLORS_FALLBACK = [
-	'#3B82F6',
-	'#8B5CF6',
-	'#10B981',
-	'#F59E0B',
-	'#059669',
-	'#EF4444',
+	BRAND_CHART.green,
+	BRAND_CHART.sun,
+	BRAND_CHART.sky,
+	BRAND_CHART.violet,
+	BRAND_CHART.teal,
+	BRAND_CHART.amber,
 ]
+
+const dashCardClassName =
+	'app-rise relative min-w-0 overflow-hidden rounded-[20px] bg-surface-card p-5 shadow-md ring-1 ring-border-soft/50 transition duration-base hover:shadow-lg hover:ring-primary/20 max-[640px]:p-4'
+
+type MetricTone = 'green' | 'sun' | 'sky' | 'violet' | 'teal'
+
+const METRIC_TONES: Record<MetricTone, { color: string; chip: string }> = {
+	green: { color: BRAND_CHART.green, chip: 'bg-primary/12 text-text-accent' },
+	sun: { color: BRAND_CHART.sun, chip: 'bg-sun/15 text-sun-strong' },
+	sky: { color: BRAND_CHART.sky, chip: 'bg-[#2E8BD8]/12 text-[#2E8BD8]' },
+	violet: { color: BRAND_CHART.violet, chip: 'bg-[#7C5CD6]/12 text-[#7C5CD6]' },
+	teal: { color: BRAND_CHART.teal, chip: 'bg-[#14A3A1]/12 text-[#14A3A1]' },
+}
+
+interface MetricCardData {
+	key: string
+	label: string
+	icon: AppIconName
+	tone: MetricTone
+	value: number
+	format: (value: number) => string
+	series?: number[]
+	hint?: string
+}
+
+function DashSectionHeading({
+	icon,
+	title,
+	description,
+	aside,
+}: {
+	icon: AppIconName
+	title: string
+	description?: string
+	aside?: ReactNode
+}) {
+	return (
+		<div className='flex flex-wrap items-start justify-between gap-3'>
+			<div className='flex min-w-0 items-start gap-3'>
+				<span
+					aria-hidden='true'
+					className='mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-sun/15 text-text-accent ring-1 ring-primary/15'
+				>
+					<AppIcon name={icon} className='h-4 w-4' />
+				</span>
+				<div className='min-w-0'>
+					<h2 className='m-0 font-display text-[1.12rem] font-extrabold tracking-[-0.01em] text-text-primary'>
+						{title}
+					</h2>
+					{description ? (
+						<p className='mt-0.5 text-sm text-text-secondary'>{description}</p>
+					) : null}
+				</div>
+			</div>
+			{aside}
+		</div>
+	)
+}
+
+function DashboardSkeleton() {
+	return (
+		<PageLayout>
+			<section className='grid gap-4 min-[768px]:gap-5' aria-busy='true'>
+				<div className='app-skeleton h-[188px] rounded-[24px]' />
+				<div className='grid grid-cols-2 gap-3 xl:grid-cols-5'>
+					{Array.from({ length: 5 }, (_, index) => (
+						<div
+							key={index}
+							className='rounded-[20px] bg-surface-card p-5 shadow-md ring-1 ring-border-soft/50'
+						>
+							<div className='app-skeleton h-9 w-9 rounded-xl' />
+							<div className='app-skeleton mt-4 h-3 w-24 rounded-full' />
+							<div className='app-skeleton mt-3 h-7 w-20 rounded-lg' />
+						</div>
+					))}
+				</div>
+				<div className='rounded-[20px] bg-surface-card p-5 shadow-md ring-1 ring-border-soft/50'>
+					<div className='app-skeleton h-4 w-40 rounded-full' />
+					<div className='app-skeleton mt-5 h-[250px] rounded-xl' />
+				</div>
+			</section>
+		</PageLayout>
+	)
+}
 
 const tablePrimaryTextClassName =
 	'block max-w-[180px] truncate text-sm font-semibold leading-[1.35] text-text-primary min-[640px]:max-w-[320px]'
@@ -334,7 +432,7 @@ function DashboardIntervalDropdown({
 				onClick={() => setIsOpen(current => !current)}
 				className={[
 					'group inline-flex h-8 w-full min-w-0 items-center justify-between gap-2 rounded-pill border px-3.5 text-[11px] font-semibold uppercase tracking-[0.1em] transition duration-fast min-[480px]:w-auto min-[480px]:min-w-[130px]',
-					'bg-gradient-to-b from-surface-card to-surface-subtle/80 shadow-[0_15px_26px_-22px_rgba(37,99,235,0.85)]',
+					'bg-gradient-to-b from-surface-card to-surface-subtle/80 shadow-[0_15px_26px_-22px_rgba(22,133,62,0.85)]',
 					isOpen
 						? 'border-primary/60 text-text-primary ring-2 ring-primary/20'
 						: 'border-border-soft/70 text-text-secondary hover:border-primary/45 hover:text-text-primary',
@@ -500,11 +598,11 @@ function DashboardPage() {
 				},
 				chats: {
 					label: t('routes.chat.title', { defaultValue: 'Chats' }),
-					color: 'rgb(var(--color-success))',
+					color: BRAND_CHART.sky,
 				},
 				contracts: {
 					label: t('routes.contracts.title', { defaultValue: 'Contracts' }),
-					color: SOURCE_COLORS.instagram,
+					color: BRAND_CHART.sun,
 				},
 			}) satisfies ChartConfig,
 		[t],
@@ -528,23 +626,25 @@ function DashboardPage() {
 
 	if (loading) {
 		return (
-			<PageLayout>
-				<section className='rounded-xl bg-surface-card p-7 shadow-sm ring-1 ring-border-soft/40'>
-					<h1 className='m-0 font-display text-[2rem] font-extrabold text-text-primary'>
-						{t('dashboard.loadingTitle')}
-					</h1>
-					<p className='mt-2 text-sm text-text-secondary'>
-						{t('dashboard.loadingDescription')}
-					</p>
-				</section>
-			</PageLayout>
+			<>
+				<span className='sr-only' role='status'>
+					{t('dashboard.loadingTitle')}
+				</span>
+				<DashboardSkeleton />
+			</>
 		)
 	}
 
 	if (hasError || !overview) {
 		return (
 			<PageLayout>
-				<section className='rounded-xl bg-surface-card p-7 shadow-sm ring-1 ring-border-soft/40'>
+				<section className='app-rise rounded-[20px] bg-surface-card p-7 shadow-md ring-1 ring-danger/25'>
+					<span
+						aria-hidden='true'
+						className='mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-danger-bg text-danger'
+					>
+						<AppIcon name='activity' className='h-5 w-5' />
+					</span>
 					<h1 className='m-0 font-display text-[2rem] font-extrabold text-text-primary'>
 						{t('dashboard.errorTitle')}
 					</h1>
@@ -679,38 +779,74 @@ function DashboardPage() {
 			),
 		},
 	]
-	const metricCards = [
+	const countFormat = (value: number) => formatCount(value, locale)
+	const seriesOf = (key: 'clients' | 'chats' | 'contracts' | 'leads') =>
+		overview.time_series.map(point => point[key])
+	const sumOf = (values: number[]) => values.reduce((sum, value) => sum + value, 0)
+	const inRangeHint = (values: number[]) =>
+		values.length > 1
+			? t('dashboard.kpi.inRange', { count: sumOf(values), value: countFormat(sumOf(values)) })
+			: undefined
+	const clientsSeries = seriesOf('clients')
+	const chatsSeries = seriesOf('chats')
+	const contractsSeries = seriesOf('contracts')
+	const metricCards: MetricCardData[] = [
 		{
+			key: 'clients',
 			label: t('routes.clients.title', { defaultValue: 'Clients' }),
-			value: formatCount(overview.clients, locale),
+			icon: 'clients',
+			tone: 'green',
+			value: overview.clients,
+			format: countFormat,
+			series: clientsSeries,
+			hint: inRangeHint(clientsSeries),
 		},
 		{
-			label: t('routes.products.title', { defaultValue: 'Products' }),
-			value: formatCount(overview.products ?? 0, locale),
-		},
-		{
+			key: 'chats',
 			label: t('routes.chat.title', { defaultValue: 'Chats' }),
-			value: formatCount(overview.chats ?? 0, locale),
+			icon: 'chat',
+			tone: 'sky',
+			value: overview.chats ?? 0,
+			format: countFormat,
+			series: chatsSeries,
+			hint: inRangeHint(chatsSeries),
 		},
 		{
+			key: 'contracts',
 			label: t('routes.contracts.title', { defaultValue: 'Contracts' }),
-			value: formatCount(overview.contracts, locale),
+			icon: 'contracts',
+			tone: 'sun',
+			value: overview.contracts,
+			format: countFormat,
+			series: contractsSeries,
+			hint: inRangeHint(contractsSeries),
 		},
 		{
+			key: 'products',
+			label: t('routes.products.title', { defaultValue: 'Products' }),
+			icon: 'products',
+			tone: 'teal',
+			value: overview.products ?? 0,
+			format: countFormat,
+		},
+		{
+			key: 'notifications',
 			label: t('routes.notifications.title', { defaultValue: 'Notifications' }),
-			value: formatCount(overview.notifications ?? 0, locale),
-		},
-		{
-			label: t('dashboard.metrics.revenue'),
-			// Big amount: collected. Small amount: pipeline.
-			value: formatAmount(
-				overview.collected_amount ?? overview.filtered_summary.collected_amount,
-				locale,
-			),
-			// Keep the original label ("pending"/"kutilmoqda") but show pipeline amount as requested.
-			hint: `${formatAmount(overview.pipeline_amount ?? '0', locale)} ${t('dashboard.metrics.pending')}`,
+			icon: 'notifications',
+			tone: 'violet',
+			value: overview.notifications ?? 0,
+			format: countFormat,
 		},
 	]
+	// Big amount: collected. Small amount: pipeline.
+	const collectedAmount = asNumber(
+		overview.collected_amount ?? overview.filtered_summary.collected_amount,
+	)
+	const pipelineAmount = asNumber(overview.pipeline_amount ?? '0')
+	const collectedShare =
+		collectedAmount + pipelineAmount > 0
+			? (collectedAmount / (collectedAmount + pipelineAmount)) * 100
+			: 0
 
 	const rangeLabel = overview.date_range?.date_from && overview.date_range?.date_to
 		? `${formatDateLabel(
@@ -773,155 +909,292 @@ function DashboardPage() {
 	return (
 		<PageLayout>
 			<section className='grid gap-4 min-[768px]:gap-5'>
-				<header className='flex flex-wrap items-center justify-between gap-2'>
-					<p className='m-0 max-w-full break-words rounded-pill bg-surface-subtle/80 px-3 py-1.5 text-sm text-text-secondary ring-1 ring-border-soft/45'>
-						{rangeLabel} ({overview.date_range.timezone})
-					</p>
-				</header>
-
-				<section className='grid gap-3 sm:grid-cols-2 xl:grid-cols-3'>
-					{metricCards.map(card => (
-						<article
-							key={card.label}
-							className='min-w-0 overflow-hidden rounded-xl bg-surface-card p-4 shadow-sm ring-1 ring-border-soft/40 transition duration-base hover:shadow-md hover:ring-border-soft/60'
+				<header className='app-rise relative isolate overflow-hidden rounded-[24px] p-5 text-white shadow-lg min-[640px]:p-7'
+					style={{
+						background:
+							'linear-gradient(118deg, #0A3A1E 0%, #0E542A 40%, #16853E 100%)',
+					}}
+				>
+					<div aria-hidden='true' className='pointer-events-none absolute inset-0 -z-10'>
+						<div
+							className='dash-hero-ray absolute -right-24 -top-24 h-[340px] w-[340px] rounded-full'
+							style={{
+								background:
+									'radial-gradient(circle, rgb(255 214 102 / 0.95) 0%, rgb(255 182 39 / 0.55) 22%, rgb(255 182 39 / 0) 62%)',
+							}}
+						/>
+						<svg
+							className='absolute bottom-0 right-0 h-[58%] w-[62%] opacity-[0.16]'
+							viewBox='0 0 400 140'
+							preserveAspectRatio='xMaxYMax slice'
 						>
-							<p className='text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted'>
-								{card.label}
-							</p>
-							<p className='mt-1.5 font-display text-[1.85rem] font-extrabold text-text-primary'>
-								{card.value}
-							</p>
-							{card.hint ? (
-								<p className='mt-2 text-[12px] font-semibold text-text-secondary'>
-									{card.hint}
-								</p>
-							) : null}
-						</article>
-					))}
-				</section>
+							{Array.from({ length: 7 }, (_, column) => (
+								<g key={column} transform={`translate(${40 + column * 52} 64) skewX(-18)`}>
+									<rect width='44' height='60' rx='3' fill='none' stroke='white' strokeWidth='1.5' />
+									<line x1='22' y1='0' x2='22' y2='60' stroke='white' strokeWidth='1' />
+									<line x1='0' y1='20' x2='44' y2='20' stroke='white' strokeWidth='1' />
+									<line x1='0' y1='40' x2='44' y2='40' stroke='white' strokeWidth='1' />
+								</g>
+							))}
+						</svg>
+					</div>
 
-				<section className='flex flex-wrap items-stretch justify-start gap-2 min-[480px]:items-center min-[480px]:justify-end'>
-					<Popover open={isDatePopoverOpen} onOpenChange={setIsDatePopoverOpen}>
-						<PopoverTrigger asChild>
-							<button
-								type='button'
-								className='inline-flex h-8 w-full items-center justify-between gap-2 rounded-pill border border-border-soft/70 bg-gradient-to-b from-surface-card to-surface-subtle/80 px-3.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-text-secondary shadow-[0_15px_26px_-22px_rgba(37,99,235,0.6)] transition duration-fast hover:border-primary/45 hover:text-text-primary min-[480px]:w-auto min-[480px]:min-w-[248px]'
-								aria-label={t('dashboard.filters.customRange')}
-							>
-								<span className='inline-flex items-center gap-2 truncate'>
-									<AppIcon
-										name='calendar'
-										className='h-3.5 w-3.5 text-primary'
-										aria-hidden='true'
-									/>
-									<span className='truncate'>{dateRangeButtonLabel}</span>
-								</span>
-								<AppIcon
-									name='chevron-down'
-									className={[
-										'h-3.5 w-3.5 shrink-0 transition duration-fast',
-										isDatePopoverOpen
-											? 'rotate-180 text-primary'
-											: 'text-text-muted',
-									].join(' ')}
-									aria-hidden='true'
+					<div className='flex flex-wrap items-start justify-between gap-5'>
+						<div className='min-w-0'>
+							<p className='m-0 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-white/75'>
+								<svg viewBox='0 0 32 32' className='app-sun-spin h-4 w-4' aria-hidden='true'>
+									<circle cx='16' cy='16' r='6' fill='#FFD166' />
+									{Array.from({ length: 8 }, (_, index) => (
+										<rect
+											key={index}
+											x='15'
+											y='2.5'
+											width='2'
+											height='5'
+											rx='1'
+											fill='#FFD166'
+											transform={`rotate(${index * 45} 16 16)`}
+										/>
+									))}
+								</svg>
+								{t('dashboard.metrics.collectedAmount')}
+							</p>
+							<p className='m-0 mt-2 font-display text-[clamp(1.9rem,4.4vw,3rem)] font-extrabold leading-none tracking-[-0.04em]'>
+								<AnimatedNumber
+									value={collectedAmount}
+									format={value => formatAmount(value, locale)}
+									durationMs={1400}
 								/>
-							</button>
-						</PopoverTrigger>
-						<PopoverContent className='w-auto p-3'>
-							<Calendar
-								mode='range'
-								selected={selectedDateRange}
-								defaultMonth={
-									selectedDateRange?.to ?? selectedDateRange?.from ?? new Date()
-								}
-								locale={calendarLocale}
-								formatters={
-									i18n.language === 'uz'
-										? {
-												formatCaption: date => formatUzMonthYear(date, false),
+							</p>
+							<p className='m-0 mt-2.5 text-sm font-semibold text-white/80'>
+								{formatAmount(pipelineAmount, locale)}{' '}
+								<span className='font-medium text-white/60'>
+									{t('dashboard.metrics.pending')}
+								</span>
+							</p>
+							<div className='mt-4 w-[min(320px,72vw)]'>
+								<div className='h-2 overflow-hidden rounded-full bg-white/15'>
+									<span
+										className='block h-full rounded-full transition-[width] duration-1000 ease-out'
+										style={{
+											width: `${collectedShare}%`,
+											background: 'linear-gradient(90deg, #9BE36D, #FFD166)',
+										}}
+									/>
+								</div>
+								<p className='m-0 mt-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-white/60'>
+									{t('dashboard.hero.collectedShare', {
+										value: formatPercent(collectedShare),
+									})}
+								</p>
+							</div>
+						</div>
+
+						<div className='grid w-full gap-2 min-[480px]:w-auto min-[480px]:justify-items-end'>
+							<p className='m-0 max-w-full break-words rounded-pill bg-white/12 px-3 py-1.5 text-[12px] font-semibold text-white/85 ring-1 ring-white/20 backdrop-blur-sm'>
+								{rangeLabel} ({overview.date_range.timezone})
+							</p>
+						<div className='relative flex flex-wrap items-stretch gap-2 min-[480px]:items-center'>
+							<Popover open={isDatePopoverOpen} onOpenChange={setIsDatePopoverOpen}>
+								<PopoverTrigger asChild>
+									<button
+										type='button'
+										className='inline-flex h-8 w-full items-center justify-between gap-2 rounded-pill border border-border-soft/70 bg-gradient-to-b from-surface-card to-surface-subtle/80 px-3.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-text-secondary shadow-[0_15px_26px_-22px_rgba(22,133,62,0.6)] transition duration-fast hover:border-primary/45 hover:text-text-primary min-[480px]:w-auto min-[480px]:min-w-[248px]'
+										aria-label={t('dashboard.filters.customRange')}
+									>
+										<span className='inline-flex items-center gap-2 truncate'>
+											<AppIcon
+												name='calendar'
+												className='h-3.5 w-3.5 text-primary'
+												aria-hidden='true'
+											/>
+											<span className='truncate'>{dateRangeButtonLabel}</span>
+										</span>
+										<AppIcon
+											name='chevron-down'
+											className={[
+												'h-3.5 w-3.5 shrink-0 transition duration-fast',
+												isDatePopoverOpen
+													? 'rotate-180 text-primary'
+													: 'text-text-muted',
+											].join(' ')}
+											aria-hidden='true'
+										/>
+									</button>
+								</PopoverTrigger>
+								<PopoverContent className='w-auto p-3'>
+									<Calendar
+										mode='range'
+										selected={selectedDateRange}
+										defaultMonth={
+											selectedDateRange?.to ?? selectedDateRange?.from ?? new Date()
+										}
+										locale={calendarLocale}
+										formatters={
+											i18n.language === 'uz'
+												? {
+														formatCaption: date => formatUzMonthYear(date, false),
+													}
+												: undefined
+										}
+										onSelect={(range: DateRange | undefined) => {
+											if (!range?.from) {
+												setFilters(current => ({
+													...current,
+													customDateFrom: undefined,
+													customDateTo: undefined,
+												}))
+												return
 											}
-										: undefined
-								}
-								onSelect={(range: DateRange | undefined) => {
-									if (!range?.from) {
-										setFilters(current => ({
-											...current,
-											customDateFrom: undefined,
-											customDateTo: undefined,
-										}))
-										return
-									}
 
-									const from = toIsoDate(range.from)
-									const to = toIsoDate(range.to ?? range.from)
+											const from = toIsoDate(range.from)
+											const to = toIsoDate(range.to ?? range.from)
 
+											setFilters(current => ({
+												...current,
+												customDateFrom: from,
+												customDateTo: to,
+											}))
+
+											if (range.to) {
+												setIsDatePopoverOpen(false)
+											}
+										}}
+									/>
+									<div className='mt-2 flex items-center justify-between gap-2 border-t border-border-soft/70 pt-2'>
+										<button
+											type='button'
+											className='inline-flex h-8 items-center rounded-md px-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-text-secondary transition duration-fast hover:bg-surface-subtle hover:text-text-primary'
+											onClick={() =>
+												setFilters(current => ({
+													...current,
+													customDateFrom: undefined,
+													customDateTo: undefined,
+												}))
+											}
+										>
+											{t('dashboard.filters.clearRange')}
+										</button>
+										<button
+											type='button'
+											className='inline-flex h-8 items-center rounded-md bg-primary px-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-primary-foreground transition duration-fast hover:bg-primary-accent'
+											onClick={() => setIsDatePopoverOpen(false)}
+										>
+											{t('common.save')}
+										</button>
+									</div>
+								</PopoverContent>
+							</Popover>
+
+							<DashboardIntervalDropdown
+								value={filters.interval}
+								options={intervalOptions}
+								onChange={interval =>
 									setFilters(current => ({
 										...current,
-										customDateFrom: from,
-										customDateTo: to,
+										interval,
 									}))
-
-									if (range.to) {
-										setIsDatePopoverOpen(false)
-									}
-								}}
+								}
+								ariaLabel={t('dashboard.filters.intervalLabel')}
 							/>
-							<div className='mt-2 flex items-center justify-between gap-2 border-t border-border-soft/70 pt-2'>
-								<button
-									type='button'
-									className='inline-flex h-8 items-center rounded-md px-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-text-secondary transition duration-fast hover:bg-surface-subtle hover:text-text-primary'
-									onClick={() =>
-										setFilters(current => ({
-											...current,
-											customDateFrom: undefined,
-											customDateTo: undefined,
-										}))
-									}
-								>
-									{t('dashboard.filters.clearRange')}
-								</button>
-								<button
-									type='button'
-									className='inline-flex h-8 items-center rounded-md bg-primary px-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-primary-foreground transition duration-fast hover:bg-primary-accent'
-									onClick={() => setIsDatePopoverOpen(false)}
-								>
-									{t('common.save')}
-								</button>
-							</div>
-						</PopoverContent>
-					</Popover>
+						</div>
+						</div>
+					</div>
+				</header>
 
-					<DashboardIntervalDropdown
-						value={filters.interval}
-						options={intervalOptions}
-						onChange={interval =>
-							setFilters(current => ({
-								...current,
-								interval,
-							}))
-						}
-						ariaLabel={t('dashboard.filters.intervalLabel')}
-					/>
+				<section className='grid grid-cols-2 gap-3 xl:grid-cols-5'>
+					{metricCards.map((card, index) => {
+						const tone = METRIC_TONES[card.tone]
+						return (
+							<article
+								key={card.key}
+								className={`${dashCardClassName} group hover:-translate-y-0.5 ${index === metricCards.length - 1 ? 'max-xl:col-span-2' : ''}`}
+								style={{ ['--rise-index' as string]: index + 1 }}
+							>
+								<span
+									aria-hidden='true'
+									className='absolute inset-x-0 top-0 h-[3px] opacity-80'
+									style={{
+										background: `linear-gradient(90deg, ${tone.color}, transparent 85%)`,
+									}}
+								/>
+								<div className='flex h-10 items-center justify-between gap-3'>
+									<span
+										aria-hidden='true'
+										className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition duration-base group-hover:scale-105 ${tone.chip}`}
+									>
+										<AppIcon name={card.icon} className='h-[18px] w-[18px]' />
+									</span>
+									{card.series && card.series.some(value => value > 0) ? (
+										<Sparkline
+											values={card.series}
+											color={tone.color}
+											className='h-9 w-[44%] max-w-[120px]'
+										/>
+									) : null}
+								</div>
+								<p className='m-0 mt-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted'>
+									{card.label}
+								</p>
+								<p className='m-0 mt-1 font-display text-[clamp(1.45rem,5vw,1.85rem)] font-extrabold leading-tight tracking-[-0.03em] text-text-primary'>
+									<AnimatedNumber value={card.value} format={card.format} />
+								</p>
+								{card.hint ? (
+									<p className='m-0 mt-1.5 inline-flex items-center gap-1 text-[12px] font-semibold text-text-secondary'>
+										<AppIcon
+											name='trending-up'
+											className='h-3.5 w-3.5'
+											style={{ color: tone.color }}
+											aria-hidden='true'
+										/>
+										{card.hint}
+									</p>
+								) : null}
+							</article>
+						)
+					})}
 				</section>
 
 				<section className='grid gap-3'>
-					<article className='min-w-0 overflow-hidden rounded-xl bg-surface-card p-5 shadow-sm ring-1 ring-border-soft/40 transition duration-base hover:shadow-md hover:ring-border-soft/60'>
-						<h2 className='m-0 text-[1.14rem] font-semibold text-text-primary'>
-							{t('dashboard.sections.trend')}
-						</h2>
-						<p className='mt-1 text-sm text-text-secondary'>
-							{t('dashboard.descriptions.trend')}
-						</p>
+					<article className={dashCardClassName} style={{ ['--rise-index' as string]: 6 }}>
+						<DashSectionHeading
+							icon='activity'
+							title={t('dashboard.sections.trend')}
+							description={t('dashboard.descriptions.trend')}
+							aside={
+								<ul className='m-0 flex list-none flex-wrap gap-2 p-0'>
+									{(['clients', 'chats', 'contracts'] as const).map(key => (
+										<li
+											key={key}
+											className='inline-flex items-center gap-1.5 rounded-pill bg-surface-subtle px-2.5 py-1 text-[11px] font-semibold text-text-secondary ring-1 ring-border-soft/50'
+										>
+											<span
+												className='h-2 w-2 rounded-full'
+												style={{ backgroundColor: trendChartConfig[key].color }}
+											/>
+											{trendChartConfig[key].label}
+										</li>
+									))}
+								</ul>
+							}
+						/>
 						<div className='mt-4 h-[250px] min-[480px]:h-[290px]'>
 							<ChartContainer
 								config={trendChartConfig}
 								className='h-full w-full'
 							>
-								<LineChart
+								<AreaChart
 									data={localizedTimeSeries}
 									margin={{ top: 8, right: 6, left: 0, bottom: 0 }}
 								>
+									<defs>
+										{(['clients', 'chats', 'contracts'] as const).map(key => (
+											<linearGradient key={key} id={`dash-trend-${key}`} x1='0' x2='0' y1='0' y2='1'>
+												<stop offset='0%' stopColor={trendChartConfig[key].color} stopOpacity={0.26} />
+												<stop offset='100%' stopColor={trendChartConfig[key].color} stopOpacity={0} />
+											</linearGradient>
+										))}
+									</defs>
 									<CartesianGrid
 										vertical={false}
 										strokeDasharray='0'
@@ -940,46 +1213,40 @@ function DashboardPage() {
 										axisLine={false}
 										tickLine={false}
 										tickMargin={8}
-										width={26}
+										width={36}
 										allowDecimals={false}
 										className='text-[11px] font-semibold text-text-muted'
 									/>
-									<ChartTooltip content={<ChartTooltipContent />} />
-									<Line
-										type='monotone'
-										dataKey='clients'
-										stroke='rgb(var(--color-primary))'
-										strokeWidth={2.4}
-										dot={false}
+									<ChartTooltip
+										cursor={{ stroke: 'rgb(var(--color-primary) / 0.35)', strokeDasharray: '4 4' }}
+										content={<ChartTooltipContent />}
 									/>
-									<Line
-										type='monotone'
-										dataKey='chats'
-										stroke={SOURCE_COLORS.telegram}
-										strokeWidth={2.2}
-										dot={false}
-									/>
-									<Line
-										type='monotone'
-										dataKey='contracts'
-										stroke={SOURCE_COLORS.instagram}
-										strokeWidth={2}
-										dot={false}
-									/>
-								</LineChart>
+									{(['contracts', 'chats', 'clients'] as const).map(key => (
+										<Area
+											key={key}
+											type='monotone'
+											dataKey={key}
+											stroke={trendChartConfig[key].color}
+											strokeWidth={key === 'clients' ? 2.6 : 2.2}
+											fill={`url(#dash-trend-${key})`}
+											dot={false}
+											activeDot={{ r: 4.5, strokeWidth: 2, stroke: 'rgb(var(--color-surface-card))' }}
+											animationDuration={1100}
+										/>
+									))}
+								</AreaChart>
 							</ChartContainer>
 						</div>
 					</article>
 				</section>
 
 				<section className='grid gap-3 lg:grid-cols-2'>
-					<article className='min-w-0 overflow-hidden rounded-xl bg-surface-card p-5 shadow-sm ring-1 ring-border-soft/40 transition duration-base hover:shadow-md hover:ring-border-soft/60'>
-						<h2 className='m-0 text-[1.08rem] font-semibold text-text-primary'>
-							{t('dashboard.sections.source')}
-						</h2>
-						<p className='mt-1 text-sm text-text-secondary'>
-							{t('dashboard.descriptions.source')}
-						</p>
+					<article className={dashCardClassName} style={{ ['--rise-index' as string]: 7 }}>
+						<DashSectionHeading
+							icon='chat'
+							title={t('dashboard.sections.source')}
+							description={t('dashboard.descriptions.source')}
+						/>
 						{displaySourceTotal <= 0 ? (
 							<div className='mt-6 flex items-center justify-center rounded-xl border border-border-soft/60 bg-surface-subtle/65 p-12'>
 								<div className='text-center'>
@@ -1005,8 +1272,8 @@ function DashboardPage() {
 													outerRadius={84}
 													paddingAngle={3}
 													cornerRadius={7}
-													stroke='rgb(var(--color-border-soft) / 0.45)'
-													strokeWidth={2}
+													stroke='rgb(var(--color-surface-card))'
+													strokeWidth={3}
 												>
 													{sourcePieData.map(item => (
 														<Cell key={item.key} fill={item.color} />
@@ -1073,13 +1340,12 @@ function DashboardPage() {
 						)}
 					</article>
 
-					<article className='min-w-0 overflow-hidden rounded-xl bg-surface-card p-5 shadow-sm ring-1 ring-border-soft/40 transition duration-base hover:shadow-md hover:ring-border-soft/60'>
-						<h2 className='m-0 text-[1.14rem] font-semibold text-text-primary'>
-							{t('dashboard.sections.contractStatus')}
-						</h2>
-						<p className='mt-1 text-sm text-text-secondary'>
-							{t('dashboard.descriptions.contractStatus')}
-						</p>
+					<article className={dashCardClassName} style={{ ['--rise-index' as string]: 8 }}>
+						<DashSectionHeading
+							icon='contracts'
+							title={t('dashboard.sections.contractStatus')}
+							description={t('dashboard.descriptions.contractStatus')}
+						/>
 						{leadStatusTotal <= 0 ? (
 							<div className='mt-6 flex items-center justify-center rounded-xl border border-border-soft/60 bg-surface-subtle/65 p-12'>
 								<div className='text-center'>
@@ -1105,8 +1371,8 @@ function DashboardPage() {
 													outerRadius={78}
 													paddingAngle={3}
 													cornerRadius={6}
-													stroke='rgb(var(--color-border-soft) / 0.45)'
-													strokeWidth={2}
+													stroke='rgb(var(--color-surface-card))'
+													strokeWidth={3}
 												>
 													{leadStatusPieData.map(item => (
 														<Cell key={item.key} fill={item.color} />
@@ -1173,18 +1439,17 @@ function DashboardPage() {
 				</section>
 
 				<section className='min-w-0'>
-					<article className='min-w-0 overflow-hidden rounded-xl bg-surface-card p-5 shadow-sm ring-1 ring-border-soft/40 transition duration-base hover:shadow-md hover:ring-border-soft/60'>
-						<div className='flex flex-wrap items-center justify-between gap-2'>
-							<h2 className='m-0 text-[1.14rem] font-semibold text-text-primary'>
-								{t('dashboard.sections.topProducts')}
-							</h2>
-							<p className='m-0 text-[12px] font-medium text-text-muted'>
-								{t('dashboard.topProducts.hint')}
-							</p>
-						</div>
-						<p className='mt-1 text-sm text-text-secondary'>
-							{t('dashboard.descriptions.topProducts')}
-						</p>
+					<article className={dashCardClassName} style={{ ['--rise-index' as string]: 9 }}>
+						<DashSectionHeading
+							icon='products'
+							title={t('dashboard.sections.topProducts')}
+							description={t('dashboard.descriptions.topProducts')}
+							aside={
+								<p className='m-0 rounded-pill bg-sun/12 px-2.5 py-1 text-[12px] font-semibold text-sun-strong'>
+									{t('dashboard.topProducts.hint')}
+								</p>
+							}
+						/>
 
 						<div className='mt-4 min-w-0'>
 							<DataTable
@@ -1201,18 +1466,16 @@ function DashboardPage() {
 				</section>
 
 				<section className='grid gap-3 lg:grid-cols-2'>
-					<article className='min-w-0 overflow-hidden rounded-xl bg-surface-card p-5 shadow-sm ring-1 ring-border-soft/40 transition duration-base hover:shadow-md hover:ring-border-soft/60'>
-						<div className='flex flex-wrap items-center justify-between gap-2'>
-							<h2 className='m-0 text-[1.14rem] font-semibold text-text-primary'>
-								{t('dashboard.sections.regionDemand')}
-							</h2>
-						</div>
-						<p className='mt-1 text-sm text-text-secondary'>
-							{t('dashboard.descriptions.regionDemand')}
-						</p>
+					<article className={dashCardClassName} style={{ ['--rise-index' as string]: 10 }}>
+						<DashSectionHeading
+							icon='table'
+							title={t('dashboard.sections.regionDemand')}
+							description={t('dashboard.descriptions.regionDemand')}
+						/>
 						<div className='mt-4 min-w-0 overflow-x-auto'>
 							<DataTable
 								data={regionDemand}
+								compact
 								columns={regionDemandColumns}
 								rowKey={(item, index) => item.region || `region-${index}`}
 								emptyTitle={t('dashboard.regionDemand.empty')}
@@ -1221,13 +1484,15 @@ function DashboardPage() {
 						</div>
 					</article>
 
-					<article className='min-w-0 overflow-hidden rounded-xl bg-surface-card p-5 shadow-sm ring-1 ring-border-soft/40 transition duration-base hover:shadow-md hover:ring-border-soft/60'>
-						<h2 className='m-0 text-[1.14rem] font-semibold text-text-primary'>
-							{publicTx.subsidyTitle}
-						</h2>
-						<p className='mt-1 text-sm text-text-secondary'>
-							{publicTx.subsidyDescription}
-						</p>
+					<article
+						className={dashCardClassName.replace('overflow-hidden', 'overflow-visible')}
+						style={{ ['--rise-index' as string]: 11 }}
+					>
+						<DashSectionHeading
+							icon='sun'
+							title={publicTx.subsidyTitle}
+							description={publicTx.subsidyDescription}
+						/>
 
 						<form className='mt-4 grid gap-2.5' onSubmit={handleCalculateSubsidy}>
 							<label className='grid gap-1.5'>
@@ -1300,7 +1565,7 @@ function DashboardPage() {
 
 							<button
 								type='submit'
-								className='inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground transition duration-fast hover:bg-primary-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 disabled:cursor-not-allowed disabled:opacity-65'
+								className='inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-primary to-primary-accent px-4 text-sm font-semibold text-primary-foreground shadow-glow transition duration-fast hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 disabled:cursor-not-allowed disabled:opacity-65'
 								disabled={subsidyLoading}
 							>
 								<AppIcon name='activity' className='h-4 w-4' aria-hidden='true' />
@@ -1437,7 +1702,7 @@ function StylishDropdown({
 				onClick={() => setIsOpen(current => !current)}
 				className={[
 					'group inline-flex h-10 w-full items-center justify-between gap-2 rounded-lg border px-3 text-sm font-semibold transition duration-fast',
-					'bg-gradient-to-b from-surface-card to-surface-subtle/80 shadow-[0_15px_26px_-22px_rgba(37,99,235,0.55)]',
+					'bg-gradient-to-b from-surface-card to-surface-subtle/80 shadow-[0_15px_26px_-22px_rgba(22,133,62,0.55)]',
 					isOpen
 						? 'border-primary/60 text-text-primary ring-2 ring-primary/20'
 						: 'border-border-soft/70 text-text-secondary hover:border-primary/45 hover:text-text-primary',

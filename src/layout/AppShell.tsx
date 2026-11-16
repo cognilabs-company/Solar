@@ -87,7 +87,12 @@ function AppShell() {
           <div
             className={['mx-auto w-full max-w-page min-w-0', isChatRoute ? 'h-full' : ''].join(' ')}
           >
-            <Outlet key={`${location.pathname}:${refreshCounter}`} />
+            <div
+              key={`${location.pathname}:${refreshCounter}`}
+              className={['app-page-enter', isChatRoute ? 'h-full' : ''].join(' ')}
+            >
+              <Outlet />
+            </div>
           </div>
           </div>
         </main>

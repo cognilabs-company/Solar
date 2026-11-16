@@ -378,6 +378,12 @@
         "deye": "Deye",
         "solax": "Solax"
       }
+    },
+    "kpi": {
+      "inRange": "+{{value}} tanlangan davrda"
+    },
+    "hero": {
+      "collectedShare": "Umumiy summaning {{value}} qismi yig'ilgan"
     }
   },
   "leads": {
