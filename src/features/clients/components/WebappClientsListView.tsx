@@ -3,6 +3,7 @@ import { FiEdit2, FiTrash2 } from 'react-icons/fi'
 import { useTranslation } from 'react-i18next'
 import {
 	DataTable,
+	EntityCell,
 	FilterBar,
 	FilterSelect,
 	Pagination,
@@ -42,7 +43,7 @@ const tableSecondaryTextClassName =
 	'block max-w-[140px] truncate text-[12px] leading-[1.45] text-text-secondary min-[640px]:max-w-[220px]'
 
 const actionButtonClassName =
-	'inline-flex h-8 w-8 items-center justify-center rounded-md bg-surface-card text-text-secondary shadow-sm ring-1 ring-border-soft/40 transition duration-fast hover:bg-surface-subtle hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20'
+	'table-action'
 
 function statusTone(status?: string): 'info' | 'warning' | 'accent' | 'success' | 'danger' {
 	switch (status) {
@@ -337,10 +338,11 @@ export function WebappClientsListView({
 				key: 'full_name',
 				label: tx.columns.name,
 				render: client => (
-					<div className='grid gap-0.5'>
-						<span className={tablePrimaryTextClassName}>{client.full_name}</span>
-						<span className={tableSecondaryTextClassName}>{client.ai_summary || '-'}</span>
-					</div>
+					<EntityCell
+						name={client.full_name || '-'}
+						seed={client.id}
+						subtitle={client.ai_summary || '-'}
+					/>
 				),
 			},
 			{
@@ -433,7 +435,7 @@ export function WebappClientsListView({
 									</button>
 									<button
 										type='button'
-										className={actionButtonClassName}
+										className={`${actionButtonClassName} table-action--danger`}
 										onClick={event => {
 											event.stopPropagation()
 											onDeleteClient?.(client)

@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { EmptyState, LoadingState } from '../page';
+import AppIcon from '../icons/AppIcon';
 
 type DataTableAlign = 'left' | 'center' | 'right';
 
@@ -33,33 +33,32 @@ interface DataTableProps<T> {
 }
 
 const TABLE_SHELL_CLASS_NAME = [
-  'table-shell overflow-x-auto rounded-xl bg-surface-card p-2 shadow-sm ring-1 ring-border-soft/40',
+  'table-shell relative overflow-x-auto rounded-xl bg-surface-card shadow-md ring-1 ring-border-soft/45',
   '[-webkit-overflow-scrolling:touch]',
-  '[&>div]:min-h-[240px] [&>div]:rounded-none [&>div]:border-0 [&>div]:bg-transparent [&>div]:shadow-none [&>div]:ring-0',
 ].join(' ');
 
 const TABLE_CLASS_NAME =
-  'data-table min-w-[620px] w-full border-separate border-spacing-y-1.5 min-[768px]:min-w-[720px]';
+  'data-table min-w-[620px] w-full min-[768px]:min-w-[720px]';
 
-const ROW_CLASS_NAME =
-  'data-table__row bg-surface-subtle/70';
-
+const ROW_CLASS_NAME = 'data-table__row';
 
 const CLICKABLE_ROW_CLASS_NAME = [
   ROW_CLASS_NAME,
-  'data-table__row--clickable cursor-pointer transition-colors duration-fast hover:bg-primary/8',
+  'data-table__row--clickable cursor-pointer',
 ].join(' ');
 
-const SELECTED_ROW_CLASS_NAME =
-  'data-table__row--selected bg-primary/10 shadow-[inset_0_0_0_1px_rgb(var(--color-primary)/0.3)]';
+const SELECTED_ROW_CLASS_NAME = 'data-table__row--selected';
 
 const HEAD_CELL_BASE_CLASS_NAME = [
-  'data-table__cell data-table__cell--head px-4 py-3.5 align-middle text-[11px] font-bold uppercase tracking-[0.12em] max-[640px]:px-4',
-  'bg-transparent text-text-muted',
+  'data-table__cell data-table__cell--head px-4 py-3 align-middle text-[11px] font-bold uppercase tracking-[0.12em] max-[640px]:px-3',
+  'text-text-muted',
 ].join(' ');
 
 const BODY_CELL_BASE_CLASS_NAME =
-  'data-table__cell px-4 py-3.5 align-middle text-sm text-text-primary first:rounded-l-lg last:rounded-r-lg max-[640px]:px-4';
+  'data-table__cell px-4 py-3.5 align-middle text-sm text-text-primary max-[640px]:px-3';
+
+const SKELETON_ROW_COUNT = 6;
+const SKELETON_WIDTHS = ['w-[72%]', 'w-[54%]', 'w-[64%]', 'w-[46%]', 'w-[58%]'];
 
 const ALIGN_CLASS_NAMES: Record<DataTableAlign, string> = {
   left: 'text-left',
@@ -257,11 +256,51 @@ function DataTable<T>({
 
   if (loading) {
     return (
-      <div className={TABLE_SHELL_CLASS_NAME}>
-        <LoadingState
-          title={t('shared.table.loadingTitle')}
-          description={t('shared.table.loadingDescription')}
-        />
+      <div className={TABLE_SHELL_CLASS_NAME} aria-busy="true">
+        <span className="sr-only">
+          {t('shared.table.loadingTitle')}. {t('shared.table.loadingDescription')}
+        </span>
+        <table className={tableClassName} aria-hidden="true">
+          <thead>
+            <tr>
+              {columns.map((column) => (
+                <th
+                  key={column.key}
+                  className={[HEAD_CELL_BASE_CLASS_NAME, ALIGN_CLASS_NAMES[column.align ?? 'left']].join(' ')}
+                >
+                  {column.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: SKELETON_ROW_COUNT }).map((_, rowIndex) => (
+              <tr key={rowIndex} className="data-table__row data-table__row--skeleton">
+                {columns.map((column, columnIndex) => (
+                  <td key={column.key} className={BODY_CELL_BASE_CLASS_NAME}>
+                    {columnIndex === 0 ? (
+                      <div className="flex items-center gap-3">
+                        <span className="app-skeleton h-9 w-9 shrink-0 rounded-full" />
+                        <span className="grid flex-1 gap-1.5">
+                          <span className="app-skeleton h-2.5 w-[70%] rounded-pill" />
+                          <span className="app-skeleton h-2 w-[45%] rounded-pill" />
+                        </span>
+                      </div>
+                    ) : (
+                      <span
+                        className={[
+                          'app-skeleton block h-2.5 rounded-pill',
+                          SKELETON_WIDTHS[(rowIndex + columnIndex) % SKELETON_WIDTHS.length],
+                          column.align === 'right' ? 'ml-auto' : column.align === 'center' ? 'mx-auto' : '',
+                        ].join(' ')}
+                      />
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     );
   }
@@ -269,10 +308,17 @@ function DataTable<T>({
   if (!data.length) {
     return (
       <div className={TABLE_SHELL_CLASS_NAME}>
-        <EmptyState
-          title={resolvedEmptyTitle}
-          description={resolvedEmptyDescription}
-        />
+        <div className="table-empty grid min-h-[260px] place-items-center px-6 py-10 text-center">
+          <div className="grid max-w-[46ch] justify-items-center gap-3">
+            <div className="table-empty__icon relative grid h-16 w-16 place-items-center rounded-full bg-primary/10 text-text-accent">
+              <span className="absolute inset-[-10px] rounded-full border border-dashed border-primary/25" aria-hidden="true" />
+              <span className="absolute right-0 top-0 h-3 w-3 rounded-full bg-sun shadow-[0_0_12px_rgb(var(--color-sun)/0.8)]" aria-hidden="true" />
+              <AppIcon name="search" className="h-6 w-6" aria-hidden="true" />
+            </div>
+            <h3 className="m-0 mt-2 text-base font-semibold text-text-primary">{resolvedEmptyTitle}</h3>
+            <p className="m-0 text-sm leading-[1.55] text-text-secondary">{resolvedEmptyDescription}</p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -299,11 +345,11 @@ function DataTable<T>({
           >
             <tbody>
               <tr
-                className={[ROW_CLASS_NAME, 'shadow-[0_22px_50px_-30px_rgba(15,23,42,0.65)]'].join(' ')}
+                className={[ROW_CLASS_NAME, 'data-table__row--dragging'].join(' ')}
                 style={{ height: `${dragRowRectRef.current.height}px` }}
               >
                 <td
-                  className={[BODY_CELL_BASE_CLASS_NAME, 'w-10 px-3 bg-surface-subtle/70'].join(' ')}
+                  className={[BODY_CELL_BASE_CLASS_NAME, 'w-10 px-3'].join(' ')}
                   style={{ height: `${dragRowRectRef.current.height}px` }}
                 >
                   <span className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted">
@@ -319,7 +365,6 @@ function DataTable<T>({
                     key={`drag-overlay-${column.key}`}
                     className={[
                       BODY_CELL_BASE_CLASS_NAME,
-                      'bg-surface-subtle/70',
                       `data-table__cell--${column.align ?? 'left'}`,
                       ALIGN_CLASS_NAMES[column.align ?? 'left'],
                     ].join(' ')}
@@ -380,6 +425,7 @@ function DataTable<T>({
                     ? 'bg-primary/5 shadow-[inset_0_0_0_1px_rgb(var(--color-primary)/0.25)]'
                     : '',
                 ].join(' ')}
+                style={{ '--row-i': Math.min(renderIndex, 14) } as CSSProperties}
                 onClick={onRowClick && row ? () => onRowClick(row) : undefined}
                 aria-selected={isSelected}
               >

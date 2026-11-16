@@ -3,6 +3,7 @@ import { FiEye } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import {
   DataTable,
+  EntityCell,
   FilterBar,
   Pagination,
   type DataTableColumn,
@@ -31,7 +32,7 @@ const labelClassName =
   'text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted';
 
 const actionButtonClassName =
-  'inline-flex h-8 w-8 items-center justify-center rounded-md bg-surface-card text-text-secondary shadow-sm ring-1 ring-border-soft/40 transition duration-fast hover:bg-surface-subtle hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-60';
+  'table-action';
 
 function toIsoDate(value: Date): string {
   const year = value.getFullYear();
@@ -218,12 +219,11 @@ function OperatorKpiPage() {
         key: 'operator',
         label: t('operatorKpi.columns.operator', { defaultValue: 'Operator' }),
         render: (item) => (
-          <div className="grid gap-0.5">
-            <span className="text-sm font-semibold text-text-primary">
-              {item.full_name || item.username}
-            </span>
-            <span className="text-[12px] text-text-secondary">@{item.username}</span>
-          </div>
+          <EntityCell
+            name={item.full_name || item.username}
+            seed={item.username}
+            subtitle={`@${item.username}`}
+          />
         ),
       },
       {

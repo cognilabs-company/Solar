@@ -13,3 +13,4 @@ export { default as Switch } from './Switch';
 export { getStatusBadgeTone } from './StatusBadge';
 export { default as AnimatedNumber } from './AnimatedNumber';
 export { default as Sparkline } from './Sparkline';
+export { EntityCell, SourceChip, TableAvatar, getInitials } from './TableCells';

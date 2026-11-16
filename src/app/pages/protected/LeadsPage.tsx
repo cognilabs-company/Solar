@@ -4,6 +4,9 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
 	DataTable,
+	EntityCell,
+	SourceChip,
+	TableAvatar,
 	FilterBar,
 	FilterSelect,
 	Pagination,
@@ -71,7 +74,7 @@ const labelClassName =
 	'text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted'
 
 const actionButtonClassName =
-	'inline-flex h-8 w-8 items-center justify-center rounded-md bg-surface-card text-text-secondary shadow-sm ring-1 ring-border-soft/40 transition duration-fast hover:bg-surface-subtle hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20'
+	'table-action'
 
 const UNASSIGNED_OPERATOR_VALUE = ''
 const UUID_PATTERN =
@@ -131,19 +134,6 @@ function formatRelativeTime(
 	}
 
 	return formatter.format(Math.round(delta / day), 'day')
-}
-
-function channelAbbreviation(source: string): string {
-	switch (normalizeLeadSource(source)) {
-		case 'instagram':
-			return 'IG'
-		case 'telegram':
-			return 'TG'
-		case 'manual':
-			return 'MN'
-		default:
-			return 'OTR'
-	}
 }
 
 function getLeadStatusTone(
@@ -515,14 +505,11 @@ function LeadsPage() {
 				key: 'lead',
 				label: t('leads.lead'),
 				render: lead => (
-					<div className='grid gap-0.5'>
-						<span className={tablePrimaryTextClassName}>
-							{lead.full_name || t('leads.detail.titleFallback')}
-						</span>
-						<span className={tableSecondaryTextClassName}>
-							{lead.ai_summary ?? t('leads.awaitingOutreach')}
-						</span>
-					</div>
+					<EntityCell
+						name={lead.full_name || t('leads.detail.titleFallback')}
+						seed={lead.id}
+						subtitle={lead.ai_summary ?? t('leads.awaitingOutreach')}
+					/>
 				),
 			},
 			{
@@ -549,12 +536,10 @@ function LeadsPage() {
 
 					return (
 						<div className='grid gap-0.5'>
-							<span className='inline-flex items-center gap-1.5 text-sm font-semibold text-text-primary'>
-								<span className='inline-flex h-5 min-w-5 items-center justify-center rounded-md bg-info-bg px-1 text-[10px] font-semibold text-info'>
-									{channelAbbreviation(normalizedSource)}
-								</span>
-								{getChannelLabel(t, normalizedSource)}
-							</span>
+							<SourceChip
+								source={normalizedSource}
+								label={getChannelLabel(t, normalizedSource)}
+							/>
 							<span className={tableSecondaryTextClassName}>
 								{lead.ai_summary ?? t('leads.awaitingOutreach')}
 							</span>
@@ -581,7 +566,12 @@ function LeadsPage() {
 						? operatorNameById.get(lead.manager)
 						: null
 					return (
-						<div className='grid gap-0.5'>
+						<div className='flex min-w-0 items-center gap-2'>
+							<TableAvatar
+								name={managerName ?? lead.manager_username ?? null}
+								seed={lead.manager ?? null}
+								size='sm'
+							/>
 							<span className={tablePrimaryTextClassName}>
 								{managerName ??
 									lead.manager_username ??
@@ -636,7 +626,7 @@ function LeadsPage() {
 						</button>
 						<button
 							type='button'
-							className={actionButtonClassName}
+							className={`${actionButtonClassName} table-action--danger`}
 							onClick={event => {
 								event.stopPropagation()
 								requestDelete(lead)

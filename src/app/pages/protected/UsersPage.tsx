@@ -4,6 +4,7 @@ import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import {
   DataTable,
+  EntityCell,
   FilterBar,
   FilterSelect,
   Pagination,
@@ -55,7 +56,7 @@ const labelClassName =
   'text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted';
 
 const actionButtonClassName =
-  'inline-flex h-8 w-8 items-center justify-center rounded-md bg-surface-card text-text-secondary shadow-sm ring-1 ring-border-soft/40 transition duration-fast hover:bg-surface-subtle hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-60';
+  'table-action';
 
 const DEFAULT_PAGINATION_META: PaginationMeta = {
   page: 1,
@@ -368,10 +369,11 @@ function UsersPage() {
         key: 'user',
         label: t('users.columns.user'),
         render: (user) => (
-          <div className="grid gap-0.5">
-            <span className={tablePrimaryTextClassName}>{user.full_name}</span>
-            <span className={tableSecondaryTextClassName}>{user.email || t('common.na')}</span>
-          </div>
+          <EntityCell
+            name={user.full_name}
+            seed={user.id}
+            subtitle={user.email || t('common.na')}
+          />
         ),
       },
       {
@@ -472,7 +474,7 @@ function UsersPage() {
             </button>
             <button
               type="button"
-              className={actionButtonClassName}
+              className={`${actionButtonClassName} table-action--danger`}
               onClick={(event) => {
                 event.stopPropagation();
                 requestDelete(user);

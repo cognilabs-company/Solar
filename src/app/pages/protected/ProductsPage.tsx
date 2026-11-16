@@ -69,7 +69,7 @@ const labelClassName =
   'text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted';
 
 const actionButtonClassName =
-  'inline-flex h-8 w-8 items-center justify-center rounded-md bg-surface-card text-text-secondary shadow-sm ring-1 ring-border-soft/40 transition duration-fast hover:bg-surface-subtle hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20';
+  'table-action';
 
 function parseOrdering(ordering: ProductOrdering): Pick<TableQueryParams, 'sortBy' | 'sortDirection'> {
   const direction = ordering.startsWith('-') ? 'desc' : 'asc';
@@ -763,7 +763,7 @@ function ProductsPage() {
             </button>
             <button
               type="button"
-              className={actionButtonClassName}
+              className={`${actionButtonClassName} table-action--danger`}
               onClick={(event) => {
                 event.stopPropagation();
                 requestDelete(product);
@@ -865,7 +865,7 @@ function ProductsPage() {
             </button>
             <button
               type="button"
-              className={actionButtonClassName}
+              className={`${actionButtonClassName} table-action--danger`}
               onClick={(event) => {
                 event.stopPropagation();
                 setCategoryToDelete(category);

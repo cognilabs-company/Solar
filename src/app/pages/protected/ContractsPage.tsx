@@ -40,7 +40,7 @@ const tablePrimaryTextClassName =
 const tableSecondaryTextClassName =
 	'block max-w-[160px] truncate text-[12px] leading-[1.45] text-text-secondary min-[640px]:max-w-[240px]'
 const actionButtonClassName =
-	'inline-flex h-8 w-8 items-center justify-center rounded-md bg-surface-card text-text-secondary shadow-sm ring-1 ring-border-soft/40 transition duration-fast hover:bg-surface-subtle hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20'
+	'table-action'
 
 function statusTone(
 	status?: string,
@@ -309,7 +309,7 @@ function ContractsPage() {
 									</button>
 									<button
 										type='button'
-										className={actionButtonClassName}
+										className={`${actionButtonClassName} table-action--danger`}
 										onClick={event => {
 											event.stopPropagation()
 											setContractToDelete(contract)
