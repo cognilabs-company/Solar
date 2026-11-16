@@ -175,7 +175,15 @@
       "hidePassword": "Parolni yashirish",
       "showPassword": "Parolni ko'rsatish",
       "footerRights": "© 2026 Solar. Barcha huquqlar himoyalangan.",
-      "footerPowered": "Ishlab chiquvchi"
+      "footerPowered": "Ishlab chiquvchi",
+      "scene": {
+        "kicker": "Quyosh kuzatuvchi",
+        "title": "Har bir panel quyoshga qarab buriladi",
+        "subtitle": "Green NRG mijozlari, lidlar va shartnomalar — barchasi bitta boshqaruv panelida.",
+        "clock": "Vaqt",
+        "tilt": "Panel burchagi",
+        "power": "Quvvat"
+      }
     },
     "accessDenied": {
       "eyebrow": "Kirish nazorati",
