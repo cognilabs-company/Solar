@@ -29,6 +29,10 @@ export default defineConfig(({ mode }) => {
               return 'vendor-i18n';
             }
 
+            if (id.includes('/three/')) {
+              return 'vendor-three';
+            }
+
             if (id.includes('/recharts/')) {
               return 'vendor-charts';
             }

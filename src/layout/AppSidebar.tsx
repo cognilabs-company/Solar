@@ -5,6 +5,7 @@ import { navigationConfig } from '../config/navigation'
 import AppIcon from '../components/shared/icons/AppIcon'
 import { useAuth } from '../auth'
 import { services } from '../services'
+import SidebarSolarBadge from './SidebarSolarBadge'
 
 interface AppSidebarProps {
 	isOpen: boolean
@@ -29,8 +30,9 @@ const navLinkInactiveClassName = [
 	'hover:bg-surface-card/85 hover:text-text-primary',
 ].join(' ')
 
-// The active background is painted by the sliding indicator behind the links.
-const navLinkActiveClassName = ['text-text-accent'].join(' ')
+// The active background is painted by the sliding indicator behind the links;
+// the right padding leaves room for the 3D solar tracker riding on it.
+const navLinkActiveClassName = ['pr-14 text-text-accent'].join(' ')
 
 interface IndicatorRect {
 	top: number
@@ -59,6 +61,7 @@ function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
 		height: 0,
 		visible: false,
 	})
+	const [isActiveHovered, setIsActiveHovered] = useState(false)
 
 	useEffect(() => {
 		let isActive = true
@@ -228,6 +231,10 @@ function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
 					}}
 				>
 					<span className='absolute left-0 top-1/2 h-[60%] w-[3px] -translate-y-1/2 rounded-full bg-gradient-to-b from-primary to-sun' />
+					<SidebarSolarBadge
+						top={indicator.visible ? indicator.top : -1}
+						hovered={isActiveHovered}
+					/>
 				</span>
 				{visibleNavigationGroups.map(group => (
 					<section key={group.id} className='mt-0 first:mt-0 [&+&]:mt-5'>
@@ -252,6 +259,12 @@ function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
 										key={item.id}
 										to={item.path}
 										end
+										onMouseEnter={event =>
+											setIsActiveHovered(
+												event.currentTarget.getAttribute('aria-current') === 'page',
+											)
+										}
+										onMouseLeave={() => setIsActiveHovered(false)}
 										className={({ isActive }) =>
 											[
 												navLinkBaseClassName,

@@ -177,13 +177,19 @@
       "footerRights": "© 2026 Solar. Barcha huquqlar himoyalangan.",
       "footerPowered": "Ishlab chiquvchi",
       "scene": {
-        "kicker": "Quyosh kuzatuvchi",
-        "title": "Har bir panel quyoshga qarab buriladi",
-        "subtitle": "Green NRG mijozlari, lidlar va shartnomalar — barchasi bitta boshqaruv panelida.",
-        "clock": "Vaqt",
-        "tilt": "Panel burchagi",
-        "power": "Quvvat"
-      }
+        "kicker": "Green NRG · Quyosh energiyasi",
+        "titleStart": "Kunduzgi quyosh —",
+        "titleAccent": "tungi yorug'lik",
+        "subtitle": "Mijozlar, lidlar va shartnomalar bitta panelda. Kunduzgi tomondagi panellar yig'gan energiya tungi shaharlarni yoritadi.",
+        "hint": "Sayyorani sichqoncha bilan aylantiring",
+        "hintTouch": "Sayyorani barmog'ingiz bilan aylantiring",
+        "farms": "Ishlayotgan fermalar",
+        "cities": "Yoritilgan shaharlar",
+        "grid": "Tarmoq quvvati",
+        "gridShort": "Tarmoq"
+      },
+      "cardTitle": "Tizimga kirish",
+      "cardHint": "Hisobingizga kiring — har bir harf tarmoqqa energiya qo'shadi."
     },
     "accessDenied": {
       "eyebrow": "Kirish nazorati",
